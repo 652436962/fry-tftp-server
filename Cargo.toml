@@ -1,9 +1,9 @@
 [package]
-name = "fry-tftp-server"
+name = "rust-tftp-server"
 version = "1.0.2"
 edition = "2021"
 rust-version = "1.75"
-description = "Fry TFTP Server — cross-platform high-performance TFTP server"
+description = "RustTFTP — cross-platform high-performance TFTP server"
 license = "MIT"
 repository = "https://github.com/qulisun/fry-tftp-server"
 homepage = "https://github.com/qulisun/fry-tftp-server"
@@ -17,14 +17,14 @@ depends = "$auto"
 section = "net"
 priority = "optional"
 assets = [
-    ["target/release/fry-tftp-server", "usr/local/bin/", "755"],
-    ["deploy/fry-fry-tftp-server.service", "lib/systemd/system/", "644"],
+    ["target/release/rust-tftp", "usr/local/bin/", "755"],
+    ["deploy/rust-tftp-server.service", "lib/systemd/system/", "644"],
 ]
 
 [package.metadata.generate-rpm]
 assets = [
-    { source = "target/release/fry-tftp-server", dest = "/usr/local/bin/fry-tftp-server", mode = "755" },
-    { source = "deploy/fry-fry-tftp-server.service", dest = "/lib/systemd/system/fry-tftp-server.service", mode = "644" },
+    { source = "target/release/rust-tftp", dest = "/usr/local/bin/rust-tftp", mode = "755" },
+    { source = "deploy/rust-tftp-server.service", dest = "/lib/systemd/system/rust-tftp-server.service", mode = "644" },
 ]
 
 [dependencies]
@@ -90,7 +90,7 @@ gui = ["dep:eframe", "dep:egui", "dep:egui_plot", "dep:rfd", "dep:tray-icon", "d
 tui = ["dep:ratatui", "dep:crossterm"]
 
 [[bin]]
-name = "fry-tftp-server"
+name = "rust-tftp"
 path = "src/main.rs"
 
 [[test]]

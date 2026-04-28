@@ -3,10 +3,10 @@
 <plist version="1.0">
 <dict>
     <key>Label</key>
-    <string>com.fry-tftp-server</string>
+    <string>com.rust-tftp</string>
     <key>ProgramArguments</key>
     <array>
-        <string>/usr/local/bin/fry-tftp-server</string>
+        <string>/usr/local/bin/rust-tftp</string>
         <string>--headless</string>
     </array>
     <key>RunAtLoad</key>
@@ -14,9 +14,9 @@
     <key>KeepAlive</key>
     <true/>
     <key>StandardOutPath</key>
-    <string>/usr/local/var/log/fry-tftp-server.log</string>
+    <string>/usr/local/var/log/rust-tftp.log</string>
     <key>StandardErrorPath</key>
-    <string>/usr/local/var/log/fry-tftp-server.error.log</string>
+    <string>/usr/local/var/log/rust-tftp.error.log</string>
     <key>UserName</key>
     <string>nobody</string>
 </dict>

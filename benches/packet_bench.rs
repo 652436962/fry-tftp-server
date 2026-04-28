@@ -1,6 +1,6 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 
-use fry_tftp_server::core::protocol::packet::{parse_packet, serialize_packet, Packet, TftpOption};
+use rust_tftp_server::core::protocol::packet::{parse_packet, serialize_packet, Packet, TftpOption};
 
 fn bench_parse_rrq(c: &mut Criterion) {
     // RRQ: opcode(2) + "firmware.bin\0" + "octet\0" + "blksize\0" + "1468\0"

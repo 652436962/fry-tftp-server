@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="screenshots/icon.png" alt="Fry TFTP Server" width="128" height="128">
+  <img src="screenshots/icon.png" alt="RustTFTP" width="128" height="128">
 </p>
 
-<h1 align="center">Fry TFTP Server</h1>
+<h1 align="center">RustTFTP</h1>
 
 <p align="center">
   <strong>High-performance, cross-platform TFTP server with GUI, TUI, and headless modes</strong>
@@ -21,9 +21,9 @@
 
 ## Overview
 
-Fry TFTP Server is a modern TFTP server built in Rust, designed for network engineers, sysadmins, and anyone who needs fast, reliable firmware distribution and PXE boot infrastructure. It supports all major TFTP RFCs including sliding window transfers (RFC 7440) for throughput up to **500+ MB/s**.
+RustTFTP is a modern TFTP server built in Rust, designed for network engineers, sysadmins, and anyone who needs fast, reliable firmware distribution and PXE boot infrastructure. It supports all major TFTP RFCs including sliding window transfers (RFC 7440) for throughput up to **500+ MB/s**.
 
-### Why Fry?
+### Why RustTFTP?
 
 - **3 interfaces** in one binary &mdash; GUI, terminal UI, or headless daemon
 - **10x faster** than traditional TFTP servers with sliding window & mmap
@@ -67,8 +67,8 @@ Fry TFTP Server is a modern TFTP server built in Rust, designed for network engi
 Get the latest release from the [Releases page](https://github.com/qulisun/fry-tftp-server/releases), or build from source:
 
 ```bash
-git clone https://github.com/qulisun/fry-tftp-server.git
-cd fry-tftp-server
+git clone https://github.com/qulisun/rust-tftp.git
+cd rust-tftp
 cargo build --release
 ```
 
@@ -76,43 +76,43 @@ cargo build --release
 
 ```bash
 # GUI mode (default)
-./target/release/fry-tftp-server
+./target/release/rust-tftp
 
 # TUI mode
-./target/release/fry-tftp-server --tui
+./target/release/rust-tftp --tui
 
 # Headless daemon
-./target/release/fry-tftp-server --headless
+./target/release/rust-tftp --headless
 
 # Custom options
-./target/release/fry-tftp-server --headless -p 6969 -r /srv/tftp --allow-write
+./target/release/rust-tftp --headless -p 6969 -r /srv/tftp --allow-write
 ```
 
 ### macOS
 
-Download the `.dmg` from [Releases](https://github.com/qulisun/fry-tftp-server/releases), open it, and drag **Fry TFTP Server** to Applications.
+Download the `.dmg` from [Releases](https://github.com/qulisun/rust-tftp/releases), open it, and drag **RustTFTP** to Applications.
 
 > **Note:** On first launch, right-click the app and select **Open** (macOS Gatekeeper). Port 69 works without sudo on macOS Ventura+.
 
 ### Windows
 
-Download `fry-tftp-server-windows-x86_64.zip` from [Releases](https://github.com/qulisun/fry-tftp-server/releases), extract, and double-click `fry-tftp-server.exe`.
+Download `rust-tftp-windows-x86_64.zip` from [Releases](https://github.com/qulisun/rust-tftp/releases), extract, and double-click `rust-tftp.exe`.
 
 > **First launch:** Windows SmartScreen may show "Windows protected your PC". Click **More info** → **Run anyway**. This happens because the binary is not code-signed.
 >
 > **Alternative:** Right-click the `.exe` → **Properties** → check **Unblock** → **OK**. This removes the SmartScreen warning permanently for this file.
 >
-> **PowerShell:** `Unblock-File -Path .\fry-tftp-server.exe`
+> **PowerShell:** `Unblock-File -Path .\rust-tftp.exe`
 
 Port 69 requires Administrator privileges on Windows. Right-click → **Run as Administrator**, or use `-p <port>` with a port above 1024.
 
 ### Linux AppImage
 
-Download `fry-tftp-server-linux-x86_64.AppImage` from [Releases](https://github.com/qulisun/fry-tftp-server/releases), then run:
+Download `rust-tftp-linux-x86_64.AppImage` from [Releases](https://github.com/qulisun/rust-tftp/releases), then run:
 
 ```bash
-chmod +x fry-tftp-server-linux-x86_64.AppImage
-./fry-tftp-server-linux-x86_64.AppImage
+chmod +x rust-tftp-linux-x86_64.AppImage
+./rust-tftp-linux-x86_64.AppImage
 ```
 
 The GUI now includes Simplified Chinese. The interface language is auto-detected from the OS locale and can also be changed in the GUI configuration page.
@@ -149,9 +149,9 @@ Configuration is loaded from platform-specific paths automatically:
 
 | Platform | Path |
 |----------|------|
-| **macOS** | `~/Library/Preferences/fry-tftp-server/config.toml` |
-| **Linux** | `~/.config/fry-tftp-server/config.toml` |
-| **Windows** | `%APPDATA%\fry-tftp-server\config.toml` |
+| **macOS** | `~/Library/Preferences/rust-tftp-server/config.toml` |
+| **Linux** | `~/.config/rust-tftp-server/config.toml` |
+| **Windows** | `%APPDATA%\rust-tftp-server\config.toml` |
 
 Override with `-c /path/to/config.toml`. See [`config/default.toml`](config/default.toml) for all options.
 
@@ -180,8 +180,8 @@ CLI flags  >  Environment (TFTP_SERVER_*)  >  Config file  >  Built-in defaults
 ### Docker
 
 ```bash
-docker build -t fry-tftp .
-docker run --net=host -v /srv/tftp:/srv/tftp fry-tftp
+docker build -t rust-tftp .
+docker run --net=host -v /srv/tftp:/srv/tftp rust-tftp
 ```
 
 > **Note:** TFTP uses ephemeral UDP ports per session. `--net=host` is required for full functionality.
@@ -189,21 +189,21 @@ docker run --net=host -v /srv/tftp:/srv/tftp fry-tftp
 ### systemd (Linux)
 
 ```bash
-sudo cp deploy/fry-tftp-server.service /etc/systemd/system/
+sudo cp deploy/rust-tftp-server.service /etc/systemd/system/
 sudo systemctl daemon-reload
-sudo systemctl enable --now fry-tftp-server
+sudo systemctl enable --now rust-tftp
 ```
 
 ### launchd (macOS)
 
 ```bash
-sudo cp deploy/com.fry-tftp-server.plist /Library/LaunchDaemons/
-sudo launchctl load /Library/LaunchDaemons/com.fry-tftp-server.plist
+sudo cp deploy/com.rust-tftp.plist /Library/LaunchDaemons/
+sudo launchctl load /Library/LaunchDaemons/com.rust-tftp.plist
 ```
 
 ### Windows
 
-**GUI mode** — just double-click `fry-tftp-server.exe`. No console window, no setup needed.
+**GUI mode** — just double-click `rust-tftp.exe`. No console window, no setup needed.
 
 **As a Windows Service** (runs in background, survives reboot):
 
@@ -211,29 +211,29 @@ sudo launchctl load /Library/LaunchDaemons/com.fry-tftp-server.plist
 # Run PowerShell as Administrator
 
 # Install the service
-fry-tftp-server.exe --install-service
+rust-tftp.exe --install-service
 
 # Start
-Start-Service FryTFTPServer
+Start-Service RustTFTPServer
 
 # Check status
-Get-Service FryTFTPServer
+Get-Service RustTFTPServer
 
 # Stop
-Stop-Service FryTFTPServer
+Stop-Service RustTFTPServer
 
 # Uninstall
-fry-tftp-server.exe --uninstall-service
+rust-tftp.exe --uninstall-service
 ```
 
-The service runs in headless mode and can be managed via `services.msc` or PowerShell. Configuration is loaded from `%APPDATA%\fry-tftp-server\config.toml`.
+The service runs in headless mode and can be managed via `services.msc` or PowerShell. Configuration is loaded from `%APPDATA%\rust-tftp-server\config.toml`.
 
 ---
 
 ## CLI Reference
 
 ```
-Usage: fry-tftp-server [OPTIONS]
+Usage: rust-tftp [OPTIONS]
 
 Options:
       --gui                Run in GUI mode (default)

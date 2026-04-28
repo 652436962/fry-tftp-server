@@ -11,6 +11,6 @@ fuzz_target!(|data: &[u8]| {
         } else {
             "/tmp/fuzz-root"
         });
-        let _ = fry_tftp_server::core::fs::resolve_path(&root, s, false, false);
+        let _ = rust_tftp_server::core::fs::resolve_path(&root, s, false, false);
     }
 });

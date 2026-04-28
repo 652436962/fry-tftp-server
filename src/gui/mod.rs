@@ -79,7 +79,7 @@ pub async fn run(
 
     let result = tokio::task::block_in_place(|| {
         eframe::run_native(
-            "Fry TFTP Server",
+            "RustTFTP",
             options,
             Box::new(move |cc| {
                 // Create the tray after the native app has initialized its GUI backend.

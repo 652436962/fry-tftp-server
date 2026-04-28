@@ -821,7 +821,7 @@ impl TuiApp {
             ServerState::Error => ("Error", Color::Red),
         };
         let title = Line::from(vec![
-            Span::raw(" Fry TFTP Server ["),
+            Span::raw(" RustTFTP ["),
             Span::styled(
                 status_str,
                 Style::default()
@@ -1431,7 +1431,7 @@ impl TuiApp {
 
         let mut lines = vec![
             Line::from(Span::styled(
-                "Fry TFTP Server",
+                "RustTFTP",
                 Style::default()
                     .fg(Color::Cyan)
                     .add_modifier(Modifier::BOLD),

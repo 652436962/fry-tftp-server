@@ -3,8 +3,8 @@ use std::net::{IpAddr, Ipv4Addr, SocketAddr};
 use std::path::PathBuf;
 
 fn bench_acl_matching(c: &mut Criterion) {
-    use fry_tftp_server::core::acl::{AclEngine, Operation};
-    use fry_tftp_server::core::config::{AclConfig, AclRuleConfig};
+    use rust_tftp_server::core::acl::{AclEngine, Operation};
+    use rust_tftp_server::core::config::{AclConfig, AclRuleConfig};
 
     let rules: Vec<AclRuleConfig> = (0..50)
         .map(|i| AclRuleConfig {
@@ -45,7 +45,7 @@ fn bench_acl_matching(c: &mut Criterion) {
 }
 
 fn bench_path_resolution(c: &mut Criterion) {
-    use fry_tftp_server::core::fs;
+    use rust_tftp_server::core::fs;
 
     let root = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
 
@@ -73,7 +73,7 @@ fn bench_path_resolution(c: &mut Criterion) {
 }
 
 fn bench_session_info_creation(c: &mut Criterion) {
-    use fry_tftp_server::core::state::{Direction, SessionInfo, SessionStatus};
+    use rust_tftp_server::core::state::{Direction, SessionInfo, SessionStatus};
 
     let addr = SocketAddr::new(IpAddr::V4(Ipv4Addr::new(192, 168, 1, 10)), 54321);
 

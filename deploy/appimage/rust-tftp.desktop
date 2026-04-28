@@ -1,9 +1,9 @@
 [Desktop Entry]
 Type=Application
-Name=Fry TFTP Server
+Name=RustTFTP
 Comment=High-performance cross-platform TFTP server
-Exec=fry-tftp-server
-Icon=fry-tftp-server
+Exec=rust-tftp
+Icon=rust-tftp
 Categories=Network;Utility;
 Terminal=false
 StartupNotify=true

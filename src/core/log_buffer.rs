@@ -112,7 +112,7 @@ pub fn load_logs_from_file(buffer: &LogBuffer, path: &Path, max_lines: usize) {
 fn find_log_files(base_path: &Path) -> Vec<std::path::PathBuf> {
     let mut results = Vec::new();
 
-    // tracing-appender daily creates files like "fry-tftp-server.log.2026-03-13"
+    // tracing-appender daily creates files like "rust-tftp.log.2026-03-13"
     // Try to find dated files in the same directory, sorted descending (most recent first)
     if let Some(parent) = base_path.parent() {
         if let Some(filename) = base_path.file_name().and_then(|f| f.to_str()) {

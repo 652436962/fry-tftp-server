@@ -3,13 +3,13 @@
 use clap::Parser;
 use std::path::PathBuf;
 
-use fry_tftp_server::core::config::Config;
-use fry_tftp_server::core::state::AppState;
+use rust_tftp_server::core::config::Config;
+use rust_tftp_server::core::state::AppState;
 
 #[derive(Parser, Debug)]
 #[command(
-    name = "fry-tftp-server",
-    about = "Fry TFTP Server — cross-platform high-performance TFTP server",
+    name = "rust-tftp",
+    about = "RustTFTP — cross-platform high-performance TFTP server",
     version
 )]
 struct Cli {
@@ -110,7 +110,7 @@ fn main() -> anyhow::Result<()> {
     };
 
     // Capture CLI overrides for config reload
-    let cli_overrides = fry_tftp_server::core::config::CliOverrides {
+    let cli_overrides = rust_tftp_server::core::config::CliOverrides {
         config_path: cli.config.clone(),
         port: cli.port,
         bind: cli.bind.clone(),
@@ -158,7 +158,7 @@ fn main() -> anyhow::Result<()> {
             let log_buffer = init_logging_with_buffer(&config, true);
             let state = AppState::new(config, cli_overrides.clone());
             state.load_transfer_history();
-            runtime.block_on(fry_tftp_server::gui::run(state, log_buffer))?;
+            runtime.block_on(rust_tftp_server::gui::run(state, log_buffer))?;
         }
         #[cfg(not(feature = "gui"))]
         {
@@ -170,7 +170,7 @@ fn main() -> anyhow::Result<()> {
             let log_buffer = init_logging_with_buffer(&config, false);
             let state = AppState::new(config, cli_overrides.clone());
             state.load_transfer_history();
-            runtime.block_on(fry_tftp_server::tui::run(state, log_buffer))?;
+            runtime.block_on(rust_tftp_server::tui::run(state, log_buffer))?;
         }
         #[cfg(not(feature = "tui"))]
         {
@@ -180,7 +180,7 @@ fn main() -> anyhow::Result<()> {
         init_logging(&config);
         let state = AppState::new(config, cli_overrides);
         state.load_transfer_history();
-        runtime.block_on(fry_tftp_server::headless::run(state))?;
+        runtime.block_on(rust_tftp_server::headless::run(state))?;
     }
 
     Ok(())
@@ -211,7 +211,7 @@ fn init_logging(config: &Config) {
                 log_path.parent().unwrap_or(std::path::Path::new(".")),
                 log_path
                     .file_name()
-                    .unwrap_or(std::ffi::OsStr::new("fry-tftp-server.log")),
+                    .unwrap_or(std::ffi::OsStr::new("rust-tftp.log")),
             )
         })) {
             Ok(file_appender) => {
@@ -277,8 +277,8 @@ fn init_syslog_layer() -> Option<tracing_journald::Layer> {
 /// Create a Windows Event Log layer.
 /// Returns None if initialization fails.
 #[cfg(windows)]
-fn init_syslog_layer() -> Option<fry_tftp_server::platform::windows_eventlog::EventLogLayer> {
-    match fry_tftp_server::platform::windows_eventlog::EventLogLayer::new("Fry TFTP Server") {
+fn init_syslog_layer() -> Option<rust_tftp_server::platform::windows_eventlog::EventLogLayer> {
+    match rust_tftp_server::platform::windows_eventlog::EventLogLayer::new("RustTFTP") {
         Ok(layer) => {
             eprintln!("[logging] Windows Event Log layer enabled");
             Some(layer)
@@ -300,19 +300,19 @@ fn init_syslog_layer() -> Option<fry_tftp_server::platform::windows_eventlog::Ev
 fn init_logging_with_buffer(
     config: &Config,
     console_output: bool,
-) -> fry_tftp_server::core::log_buffer::LogBuffer {
+) -> rust_tftp_server::core::log_buffer::LogBuffer {
     use tracing_subscriber::prelude::*;
     use tracing_subscriber::{fmt, EnvFilter};
 
     let filter =
         EnvFilter::try_new(&config.server.log_level).unwrap_or_else(|_| EnvFilter::new("info"));
 
-    let (app_layer, log_buffer) = fry_tftp_server::core::log_buffer::AppLogLayer::new();
+    let (app_layer, log_buffer) = rust_tftp_server::core::log_buffer::AppLogLayer::new();
 
     // Load previous log entries from file into the buffer
     let log_file_path = &config.server.log_file;
     if !log_file_path.is_empty() {
-        fry_tftp_server::core::log_buffer::load_logs_from_file(
+        rust_tftp_server::core::log_buffer::load_logs_from_file(
             &log_buffer,
             std::path::Path::new(log_file_path),
             500,
@@ -330,7 +330,7 @@ fn init_logging_with_buffer(
                 log_path.parent().unwrap_or(std::path::Path::new(".")),
                 log_path
                     .file_name()
-                    .unwrap_or(std::ffi::OsStr::new("fry-tftp-server.log")),
+                    .unwrap_or(std::ffi::OsStr::new("rust-tftp.log")),
             )
         })) {
             Ok(file_appender) => {
@@ -389,16 +389,16 @@ fn install_windows_service() -> anyhow::Result<()> {
     let output = std::process::Command::new("sc.exe")
         .args([
             "create",
-            "FryTFTPServer",
+            "RustTFTPServer",
             &format!("binPath={} --headless", exe_path.display()),
             "start=auto",
-            "DisplayName=Fry TFTP Server",
+            "DisplayName=RustTFTP",
         ])
         .output()?;
 
     if output.status.success() {
-        println!("Service 'FryTFTPServer' installed successfully.");
-        println!("Start with: sc.exe start FryTFTPServer");
+        println!("Service 'RustTFTPServer' installed successfully.");
+        println!("Start with: sc.exe start RustTFTPServer");
     } else {
         let stderr = String::from_utf8_lossy(&output.stderr);
         anyhow::bail!("Failed to install service: {}", stderr.trim());
@@ -410,11 +410,11 @@ fn install_windows_service() -> anyhow::Result<()> {
 #[cfg(windows)]
 fn uninstall_windows_service() -> anyhow::Result<()> {
     let output = std::process::Command::new("sc.exe")
-        .args(["delete", "FryTFTPServer"])
+        .args(["delete", "RustTFTPServer"])
         .output()?;
 
     if output.status.success() {
-        println!("Service 'FryTFTPServer' removed successfully.");
+        println!("Service 'RustTFTPServer' removed successfully.");
     } else {
         let stderr = String::from_utf8_lossy(&output.stderr);
         anyhow::bail!("Failed to remove service: {}", stderr.trim());

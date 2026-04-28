@@ -1,12 +1,12 @@
 [Unit]
-Description=Fry TFTP Server
-Documentation=https://github.com/user/fry-tftp-server
+Description=RustTFTP
+Documentation=https://github.com/user/rust-tftp-server
 After=network-online.target
 Wants=network-online.target
 
 [Service]
 Type=notify
-ExecStart=/usr/local/bin/fry-tftp-server --headless
+ExecStart=/usr/local/bin/rust-tftp --headless
 ExecReload=/bin/kill -HUP $MAINPID
 NotifyAccess=main
 Restart=on-failure
@@ -19,7 +19,7 @@ Group=tftp
 NoNewPrivileges=yes
 ProtectSystem=strict
 ProtectHome=yes
-ReadWritePaths=/srv/tftp /var/log/fry-tftp-server.log
+ReadWritePaths=/srv/tftp /var/log/rust-tftp.log
 PrivateTmp=yes
 ProtectKernelTunables=yes
 ProtectControlGroups=yes

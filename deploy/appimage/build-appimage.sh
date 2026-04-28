@@ -3,7 +3,7 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-APP_NAME="fry-tftp-server"
+APP_NAME="rust-tftp"
 APPDIR="${ROOT_DIR}/AppDir"
 BUILD_TARGET="${ROOT_DIR}/target/release/${APP_NAME}"
 OUTPUT_NAME="${APP_NAME}-linux-x86_64.AppImage"
@@ -42,7 +42,7 @@ fi
 
 mkdir -p "$APPDIR/usr/bin" "$APPDIR/usr/share/applications" "$APPDIR/usr/share/icons/hicolor/256x256/apps"
 cp "$BUILD_TARGET" "$APPDIR/usr/bin/${APP_NAME}"
-cp "deploy/appimage/fry-tftp-server.desktop" "$APPDIR/usr/share/applications/${APP_NAME}.desktop"
+cp "deploy/appimage/rust-tftp.desktop" "$APPDIR/usr/share/applications/${APP_NAME}.desktop"
 cp "src/gui/app_icon_256.png" "$APPDIR/usr/share/icons/hicolor/256x256/apps/${APP_NAME}.png"
 cp "src/gui/app_icon_256.png" "$APPDIR/${APP_NAME}.png"
 

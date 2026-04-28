@@ -6,7 +6,7 @@
 use std::net::SocketAddr;
 use std::time::Duration;
 
-use fry_tftp_server::core::protocol::packet::*;
+use rust_tftp_server::core::protocol::packet::*;
 use tokio::net::UdpSocket;
 
 /// Options to negotiate with the server.
@@ -419,8 +419,8 @@ pub struct ReceivedPacket {
 use std::path::PathBuf;
 use std::sync::Arc;
 
-use fry_tftp_server::core::config::Config;
-use fry_tftp_server::core::state::AppState;
+use rust_tftp_server::core::config::Config;
+use rust_tftp_server::core::state::AppState;
 
 /// Spawn a mini server for testing that handles one request.
 /// Returns (client, server_addr, state, server_handle).
@@ -469,7 +469,7 @@ pub async fn mini_server(
                 mode,
                 options,
             } => {
-                fry_tftp_server::core::session::spawn_read_session(
+                rust_tftp_server::core::session::spawn_read_session(
                     state_clone.clone(),
                     client_addr,
                     filename,
@@ -491,7 +491,7 @@ pub async fn mini_server(
                     });
                     let _ = server_socket.send_to(&err_pkt, client_addr).await;
                 } else {
-                    fry_tftp_server::core::session::spawn_write_session(
+                    rust_tftp_server::core::session::spawn_write_session(
                         state_clone.clone(),
                         client_addr,
                         filename,
@@ -559,7 +559,7 @@ pub async fn mini_server_multi(
                     mode,
                     options,
                 } => {
-                    fry_tftp_server::core::session::spawn_read_session(
+                    rust_tftp_server::core::session::spawn_read_session(
                         state_clone.clone(),
                         client_addr,
                         filename,
@@ -583,7 +583,7 @@ pub async fn mini_server_multi(
                         });
                         let _ = server_socket.send_to(&err_pkt, client_addr).await;
                     } else {
-                        fry_tftp_server::core::session::spawn_write_session(
+                        rust_tftp_server::core::session::spawn_write_session(
                             state_clone.clone(),
                             client_addr,
                             filename,

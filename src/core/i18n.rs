@@ -122,9 +122,9 @@ fn en() -> HashMap<&'static str, &'static str> {
     m.insert("dark_mode", "Dark Mode");
     m.insert("about", "About");
     m.insert("close", "Close");
-    m.insert("tray_running", "Fry TFTP Server - Running");
-    m.insert("tray_stopped", "Fry TFTP Server - Stopped");
-    m.insert("tray_error", "Fry TFTP Server - Error");
+    m.insert("tray_running", "RustTFTP - Running");
+    m.insert("tray_stopped", "RustTFTP - Stopped");
+    m.insert("tray_error", "RustTFTP - Error");
 
     // Tabs
     m.insert("tab_dashboard", "Dashboard");
@@ -310,7 +310,7 @@ fn en() -> HashMap<&'static str, &'static str> {
     m.insert("acl_applied_save_failed", "ACL applied (save failed:");
 
     // Help
-    m.insert("help_title", "Fry TFTP Server");
+    m.insert("help_title", "RustTFTP");
     m.insert(
         "help_subtitle",
         "High-performance, cross-platform TFTP server",
@@ -403,7 +403,7 @@ fn en() -> HashMap<&'static str, &'static str> {
     m.insert("feature_export", "Export transfers as CSV/JSON");
 
     // About
-    m.insert("about_title", "Fry TFTP Server");
+    m.insert("about_title", "RustTFTP");
     m.insert("version", "Version:");
     m.insert("author", "Author:");
     m.insert("author_name", "Viacheslav Gordeev");
@@ -438,9 +438,9 @@ fn zh() -> HashMap<&'static str, &'static str> {
     m.insert("dark_mode", "深色模式");
     m.insert("about", "关于");
     m.insert("close", "关闭");
-    m.insert("tray_running", "Fry TFTP Server - 运行中");
-    m.insert("tray_stopped", "Fry TFTP Server - 已停止");
-    m.insert("tray_error", "Fry TFTP Server - 错误");
+    m.insert("tray_running", "RustTFTP - 运行中");
+    m.insert("tray_stopped", "RustTFTP - 已停止");
+    m.insert("tray_error", "RustTFTP - 错误");
 
     m.insert("tab_dashboard", "仪表盘");
     m.insert("tab_files", "文件");
@@ -617,7 +617,7 @@ fn zh() -> HashMap<&'static str, &'static str> {
     m.insert("acl_applied_saved_to", "ACL 已应用并保存到");
     m.insert("acl_applied_save_failed", "ACL 已应用（保存失败:");
 
-    m.insert("help_title", "Fry TFTP Server");
+    m.insert("help_title", "RustTFTP");
     m.insert("help_subtitle", "高性能跨平台 TFTP 服务器");
     m.insert("supported_rfcs", "支持的 RFC");
     m.insert("features", "功能特性");
@@ -673,7 +673,7 @@ fn zh() -> HashMap<&'static str, &'static str> {
     m.insert("feature_env_overrides", "支持环境变量覆盖（TFTP_SERVER_*）");
     m.insert("feature_export", "可将传输记录导出为 CSV/JSON");
 
-    m.insert("about_title", "Fry TFTP Server");
+    m.insert("about_title", "RustTFTP");
     m.insert("version", "版本:");
     m.insert("author", "作者:");
     m.insert("author_name", "Viacheslav Gordeev");
@@ -709,9 +709,9 @@ fn ru() -> HashMap<&'static str, &'static str> {
     m.insert("dark_mode", "Тёмная тема");
     m.insert("about", "О программе");
     m.insert("close", "Закрыть");
-    m.insert("tray_running", "Fry TFTP Server - Работает");
-    m.insert("tray_stopped", "Fry TFTP Server - Остановлен");
-    m.insert("tray_error", "Fry TFTP Server - Ошибка");
+    m.insert("tray_running", "RustTFTP - Работает");
+    m.insert("tray_stopped", "RustTFTP - Остановлен");
+    m.insert("tray_error", "RustTFTP - Ошибка");
 
     // Tabs
     m.insert("tab_dashboard", "Обзор");
@@ -848,7 +848,7 @@ fn ru() -> HashMap<&'static str, &'static str> {
     m.insert("reset", "Сбросить");
 
     // Help
-    m.insert("help_title", "Fry TFTP Server");
+    m.insert("help_title", "RustTFTP");
     m.insert(
         "help_subtitle",
         "Высокопроизводительный кроссплатформенный TFTP сервер",
@@ -857,7 +857,7 @@ fn ru() -> HashMap<&'static str, &'static str> {
     m.insert("features", "Возможности");
 
     // About
-    m.insert("about_title", "Fry TFTP Server");
+    m.insert("about_title", "RustTFTP");
     m.insert("version", "Версия:");
     m.insert("author", "Автор:");
     m.insert("author_name", "Вячеслав Гордеев");
@@ -888,9 +888,9 @@ fn de() -> HashMap<&'static str, &'static str> {
     m.insert("dark_mode", "Dunkles Design");
     m.insert("about", "Über");
     m.insert("close", "Schließen");
-    m.insert("tray_running", "Fry TFTP Server - Läuft");
-    m.insert("tray_stopped", "Fry TFTP Server - Gestoppt");
-    m.insert("tray_error", "Fry TFTP Server - Fehler");
+    m.insert("tray_running", "RustTFTP - Läuft");
+    m.insert("tray_stopped", "RustTFTP - Gestoppt");
+    m.insert("tray_error", "RustTFTP - Fehler");
 
     // Tabs
     m.insert("tab_dashboard", "Übersicht");
@@ -1030,7 +1030,7 @@ fn de() -> HashMap<&'static str, &'static str> {
     m.insert("reset", "Zurücksetzen");
 
     // Help
-    m.insert("help_title", "Fry TFTP Server");
+    m.insert("help_title", "RustTFTP");
     m.insert(
         "help_subtitle",
         "Hochleistungsfähiger, plattformübergreifender TFTP-Server",
@@ -1039,7 +1039,7 @@ fn de() -> HashMap<&'static str, &'static str> {
     m.insert("features", "Funktionen");
 
     // About
-    m.insert("about_title", "Fry TFTP Server");
+    m.insert("about_title", "RustTFTP");
     m.insert("version", "Version:");
     m.insert("author", "Autor:");
     m.insert("author_name", "Viacheslav Gordeev");
@@ -1070,9 +1070,9 @@ fn es() -> HashMap<&'static str, &'static str> {
     m.insert("dark_mode", "Tema oscuro");
     m.insert("about", "Acerca de");
     m.insert("close", "Cerrar");
-    m.insert("tray_running", "Fry TFTP Server - En ejecución");
-    m.insert("tray_stopped", "Fry TFTP Server - Detenido");
-    m.insert("tray_error", "Fry TFTP Server - Error");
+    m.insert("tray_running", "RustTFTP - En ejecución");
+    m.insert("tray_stopped", "RustTFTP - Detenido");
+    m.insert("tray_error", "RustTFTP - Error");
 
     // Tabs
     m.insert("tab_dashboard", "Panel");
@@ -1209,7 +1209,7 @@ fn es() -> HashMap<&'static str, &'static str> {
     m.insert("reset", "Restablecer");
 
     // Help
-    m.insert("help_title", "Fry TFTP Server");
+    m.insert("help_title", "RustTFTP");
     m.insert(
         "help_subtitle",
         "Servidor TFTP multiplataforma de alto rendimiento",
@@ -1218,7 +1218,7 @@ fn es() -> HashMap<&'static str, &'static str> {
     m.insert("features", "Características");
 
     // About
-    m.insert("about_title", "Fry TFTP Server");
+    m.insert("about_title", "RustTFTP");
     m.insert("version", "Versión:");
     m.insert("author", "Autor:");
     m.insert("author_name", "Viacheslav Gordeev");
@@ -1248,9 +1248,9 @@ fn fr() -> HashMap<&'static str, &'static str> {
     m.insert("dark_mode", "Thème sombre");
     m.insert("about", "À propos");
     m.insert("close", "Fermer");
-    m.insert("tray_running", "Fry TFTP Server - En cours");
-    m.insert("tray_stopped", "Fry TFTP Server - Arrêté");
-    m.insert("tray_error", "Fry TFTP Server - Erreur");
+    m.insert("tray_running", "RustTFTP - En cours");
+    m.insert("tray_stopped", "RustTFTP - Arrêté");
+    m.insert("tray_error", "RustTFTP - Erreur");
 
     m.insert("tab_dashboard", "Tableau de bord");
     m.insert("tab_files", "Fichiers");
@@ -1381,7 +1381,7 @@ fn fr() -> HashMap<&'static str, &'static str> {
     m.insert("invalid_cidr", "Format CIDR invalide");
     m.insert("reset", "Réinitialiser");
 
-    m.insert("help_title", "Fry TFTP Server");
+    m.insert("help_title", "RustTFTP");
     m.insert(
         "help_subtitle",
         "Serveur TFTP multiplateforme haute performance",
@@ -1389,7 +1389,7 @@ fn fr() -> HashMap<&'static str, &'static str> {
     m.insert("supported_rfcs", "RFCs pris en charge");
     m.insert("features", "Fonctionnalités");
 
-    m.insert("about_title", "Fry TFTP Server");
+    m.insert("about_title", "RustTFTP");
     m.insert("version", "Version :");
     m.insert("author", "Auteur :");
     m.insert("author_name", "Viacheslav Gordeev");

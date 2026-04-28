@@ -2,7 +2,7 @@
 //!
 //! Writes tracing events to the Windows Application Event Log using
 //! the ReportEventW API. Events are tagged with the source name
-//! "Fry TFTP Server".
+//! "RustTFTP".
 
 use std::ffi::OsStr;
 use std::os::windows::ffi::OsStrExt;

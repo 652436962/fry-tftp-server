@@ -220,8 +220,8 @@ fn default_log_file() -> String {
     {
         dirs::data_dir()
             .map(|d| {
-                d.join("fry-tftp-server")
-                    .join("fry-tftp-server.log")
+                d.join("rust-tftp-server")
+                    .join("rust-tftp.log")
                     .to_string_lossy()
                     .to_string()
             })
@@ -231,7 +231,7 @@ fn default_log_file() -> String {
     {
         dirs::home_dir()
             .map(|h| {
-                h.join("Library/Logs/fry-tftp-server.log")
+                h.join("Library/Logs/rust-tftp.log")
                     .to_string_lossy()
                     .to_string()
             })
@@ -263,7 +263,7 @@ fn default_transfer_log() -> String {
     {
         dirs::data_dir()
             .map(|d| {
-                d.join("fry-tftp-server")
+                d.join("rust-tftp-server")
                     .join("transfers.jsonl")
                     .to_string_lossy()
                     .to_string()
@@ -274,7 +274,7 @@ fn default_transfer_log() -> String {
     {
         dirs::home_dir()
             .map(|h| {
-                h.join("Library/Logs/fry-tftp-transfers.jsonl")
+                h.join("Library/Logs/rust-tftp-transfers.jsonl")
                     .to_string_lossy()
                     .to_string()
             })
@@ -293,17 +293,17 @@ fn running_from_appimage() -> bool {
 
 #[cfg(target_os = "linux")]
 fn linux_user_log_dir() -> Option<std::path::PathBuf> {
-    dirs::config_dir().map(|d| d.join("fry-tftp-server"))
+    dirs::config_dir().map(|d| d.join("rust-tftp-server"))
 }
 
 #[cfg(target_os = "linux")]
 fn linux_default_log_file() -> String {
     if running_from_appimage() {
         linux_user_log_dir()
-            .map(|d| d.join("fry-tftp-server.log").to_string_lossy().to_string())
+            .map(|d| d.join("rust-tftp.log").to_string_lossy().to_string())
             .unwrap_or_default()
     } else {
-        "/var/log/fry-tftp-server.log".to_string()
+        "/var/log/rust-tftp.log".to_string()
     }
 }
 
@@ -311,10 +311,10 @@ fn linux_default_log_file() -> String {
 fn linux_default_transfer_log() -> String {
     if running_from_appimage() {
         linux_user_log_dir()
-            .map(|d| d.join("fry-tftp-transfers.jsonl").to_string_lossy().to_string())
+            .map(|d| d.join("rust-tftp-transfers.jsonl").to_string_lossy().to_string())
             .unwrap_or_default()
     } else {
-        "/var/log/fry-tftp-transfers.jsonl".to_string()
+        "/var/log/rust-tftp-transfers.jsonl".to_string()
     }
 }
 
@@ -486,14 +486,14 @@ impl Config {
         #[cfg(target_os = "windows")]
         {
             if let Some(appdata) = dirs::data_dir() {
-                paths.push(appdata.join("fry-tftp-server").join("config.toml"));
+                paths.push(appdata.join("rust-tftp-server").join("config.toml"));
             }
         }
 
         #[cfg(target_os = "macos")]
         {
             if let Some(home) = dirs::home_dir() {
-                paths.push(home.join("Library/Preferences/fry-tftp-server/config.toml"));
+                paths.push(home.join("Library/Preferences/rust-tftp-server/config.toml"));
             }
         }
 
@@ -501,9 +501,9 @@ impl Config {
         {
             // User-writable path first (for save), system path as fallback (for load)
             if let Some(home) = dirs::home_dir() {
-                paths.push(home.join(".config/fry-tftp-server/config.toml"));
+                paths.push(home.join(".config/rust-tftp-server/config.toml"));
             }
-            paths.push(PathBuf::from("/etc/fry-tftp-server/config.toml"));
+            paths.push(PathBuf::from("/etc/rust-tftp-server/config.toml"));
         }
 
         paths.push(PathBuf::from("config.toml"));

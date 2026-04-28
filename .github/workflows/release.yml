@@ -86,36 +86,36 @@ jobs:
         if: runner.os != 'Windows'
         run: |
           if [ "${{ matrix.target }}" = "aarch64-unknown-linux-gnu" ]; then
-            aarch64-linux-gnu-strip target/${{ matrix.target }}/release/fry-tftp-server || true
+            aarch64-linux-gnu-strip target/${{ matrix.target }}/release/rust-tftp || true
           else
-            strip target/${{ matrix.target }}/release/fry-tftp-server || true
+            strip target/${{ matrix.target }}/release/rust-tftp || true
           fi
 
       - name: Package (tar.gz)
         if: matrix.archive == 'tar.gz'
         run: |
           cd target/${{ matrix.target }}/release
-          tar czf ../../../fry-tftp-server-${{ matrix.name }}.tar.gz fry-tftp-server
+          tar czf ../../../rust-tftp-${{ matrix.name }}.tar.gz rust-tftp
           cd ../../..
 
       - name: Package (zip)
         if: matrix.archive == 'zip'
         shell: pwsh
         run: |
-          Compress-Archive -Path "target/${{ matrix.target }}/release/fry-tftp-server.exe" -DestinationPath "fry-tftp-server-${{ matrix.name }}.zip"
+          Compress-Archive -Path "target/${{ matrix.target }}/release/rust-tftp.exe" -DestinationPath "rust-tftp-${{ matrix.name }}.zip"
 
       - name: Build AppImage
         if: matrix.appimage
         run: |
           chmod +x deploy/appimage/build-appimage.sh
           ./deploy/appimage/build-appimage.sh
-          mv fry-tftp-server-linux-x86_64.AppImage fry-tftp-server-${{ matrix.name }}.AppImage
+          mv rust-tftp-linux-x86_64.AppImage rust-tftp-${{ matrix.name }}.AppImage
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: fry-tftp-server-${{ matrix.name }}
-          path: fry-tftp-server-${{ matrix.name }}.*
+          name: rust-tftp-${{ matrix.name }}
+          path: rust-tftp-${{ matrix.name }}.*
 
   release:
     name: Create Release

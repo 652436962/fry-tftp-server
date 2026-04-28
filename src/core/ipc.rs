@@ -1,8 +1,8 @@
 //! IPC management interface for the TFTP server.
 //!
 //! Provides a line-based control protocol over:
-//! - Unix domain socket (`/run/fry-tftp-server.sock` or `$XDG_RUNTIME_DIR/fry-tftp-server.sock`)
-//! - Windows Named Pipe (`\\.\pipe\fry-tftp-server-control`)
+//! - Unix domain socket (`/run/rust-tftp.sock` or `$XDG_RUNTIME_DIR/rust-tftp.sock`)
+//! - Windows Named Pipe (`\\.\pipe\rust-tftp-control`)
 //!
 //! Commands: `reload`, `stop`, `status`
 
@@ -80,9 +80,9 @@ mod unix_ipc {
     /// Determine the socket path.
     fn socket_path() -> std::path::PathBuf {
         if let Ok(runtime_dir) = std::env::var("XDG_RUNTIME_DIR") {
-            std::path::PathBuf::from(runtime_dir).join("fry-tftp-server.sock")
+            std::path::PathBuf::from(runtime_dir).join("rust-tftp.sock")
         } else {
-            std::path::PathBuf::from("/run/fry-tftp-server.sock")
+            std::path::PathBuf::from("/run/rust-tftp.sock")
         }
     }
 
@@ -101,7 +101,7 @@ mod unix_ipc {
         if let Some(parent) = path.parent() {
             if !parent.exists() {
                 // Try /tmp as fallback
-                let fallback = std::path::PathBuf::from("/tmp/fry-tftp-server.sock");
+                let fallback = std::path::PathBuf::from("/tmp/rust-tftp.sock");
                 return spawn_listener_at(fallback, state, shutdown).await;
             }
         }
@@ -186,7 +186,7 @@ mod windows_ipc {
     use super::*;
     use tokio::net::windows::named_pipe::ServerOptions;
 
-    const PIPE_NAME: &str = r"\\.\pipe\fry-tftp-server-control";
+    const PIPE_NAME: &str = r"\\.\pipe\rust-tftp-control";
 
     pub async fn spawn_ipc_listener(
         state: Arc<AppState>,

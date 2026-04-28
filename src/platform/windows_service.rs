@@ -15,7 +15,7 @@ use windows_service::{define_windows_service, service_dispatcher};
 use crate::core::config::{CliOverrides, Config};
 use crate::core::state::AppState;
 
-const SERVICE_NAME: &str = "FryTFTPServer";
+const SERVICE_NAME: &str = "RustTFTPServer";
 const SERVICE_TYPE: ServiceType = ServiceType::OWN_PROCESS;
 
 /// Attempt to run as a Windows Service.

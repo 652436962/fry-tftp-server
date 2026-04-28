@@ -5,7 +5,7 @@ use tftp_client::*;
 use std::sync::Arc;
 use std::time::Duration;
 
-use fry_tftp_server::core::protocol::packet::*;
+use rust_tftp_server::core::protocol::packet::*;
 
 /// Return the canonical path of a temp directory.
 /// On macOS `/var` is a symlink to `/private/var`, which trips the
@@ -44,7 +44,7 @@ fn test_packet_roundtrip_rrq() {
 
 #[test]
 fn test_netascii_encode_decode() {
-    use fry_tftp_server::core::session::{decode_netascii, encode_netascii};
+    use rust_tftp_server::core::session::{decode_netascii, encode_netascii};
     let native = b"line1\nline2\rline3";
     let encoded = encode_netascii(native);
     let decoded = decode_netascii(&encoded);
@@ -54,7 +54,7 @@ fn test_netascii_encode_decode() {
 
 #[test]
 fn test_path_traversal_patterns() {
-    use fry_tftp_server::core::fs::resolve_path;
+    use rust_tftp_server::core::fs::resolve_path;
     let root = std::path::PathBuf::from(if cfg!(windows) {
         "C:\\TFTP"
     } else {

@@ -1644,49 +1644,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "fry-tftp-server"
-version = "1.0.2"
-dependencies = [
- "anyhow",
- "arboard",
- "arc-swap",
- "bytes",
- "clap",
- "criterion",
- "crossterm",
- "dirs 5.0.1",
- "eframe",
- "egui",
- "egui_plot",
- "gtk",
- "ipnet",
- "memmap2",
- "nix",
- "notify",
- "png 0.17.16",
- "proptest",
- "ratatui",
- "rfd",
- "serde",
- "serde_json",
- "socket2 0.5.10",
- "tempfile",
- "thiserror 2.0.18",
- "tokio",
- "tokio-test",
- "tokio-util",
- "toml",
- "tracing",
- "tracing-appender",
- "tracing-journald",
- "tracing-subscriber",
- "tray-icon",
- "uuid",
- "windows-service",
- "windows-sys 0.59.0",
-]
-
-[[package]]
 name = "futures-channel"
 version = "0.3.32"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3933,6 +3890,49 @@ dependencies = [
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "web-sys",
+ "windows-sys 0.59.0",
+]
+
+[[package]]
+name = "rust-tftp-server"
+version = "1.0.2"
+dependencies = [
+ "anyhow",
+ "arboard",
+ "arc-swap",
+ "bytes",
+ "clap",
+ "criterion",
+ "crossterm",
+ "dirs 5.0.1",
+ "eframe",
+ "egui",
+ "egui_plot",
+ "gtk",
+ "ipnet",
+ "memmap2",
+ "nix",
+ "notify",
+ "png 0.17.16",
+ "proptest",
+ "ratatui",
+ "rfd",
+ "serde",
+ "serde_json",
+ "socket2 0.5.10",
+ "tempfile",
+ "thiserror 2.0.18",
+ "tokio",
+ "tokio-test",
+ "tokio-util",
+ "toml",
+ "tracing",
+ "tracing-appender",
+ "tracing-journald",
+ "tracing-subscriber",
+ "tray-icon",
+ "uuid",
+ "windows-service",
  "windows-sys 0.59.0",
 ]
 
