@@ -11,8 +11,8 @@ keywords = ["tftp", "server", "networking", "pxe"]
 categories = ["network-programming", "command-line-utilities"]
 
 [package.metadata.deb]
-maintainer = "Viacheslav Gordeev"
-copyright = "2026, Viacheslav Gordeev"
+maintainer = "652436962"
+copyright = "2026, 652436962"
 depends = "$auto"
 section = "net"
 priority = "optional"
@@ -22,6 +22,12 @@ assets = [
 ]
 
 [package.metadata.generate-rpm]
+name = "rust-tftp-server"
+version = "1.1.0"
+license = "MIT"
+description = "RustTFTP — High-performance, cross-platform TFTP server"
+url = "https://github.com/652436962/rust-tftp"
+vendor = "652436962"
 assets = [
     { source = "target/release/rust-tftp", dest = "/usr/local/bin/rust-tftp", mode = "755" },
     { source = "deploy/rust-tftp-server.service", dest = "/lib/systemd/system/rust-tftp-server.service", mode = "644" },
