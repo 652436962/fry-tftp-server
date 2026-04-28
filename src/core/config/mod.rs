@@ -239,7 +239,7 @@ fn default_log_file() -> String {
     }
     #[cfg(not(any(target_os = "windows", target_os = "macos")))]
     {
-        "/var/log/fry-tftp-server.log".to_string()
+        linux_default_log_file()
     }
 }
 
@@ -282,6 +282,38 @@ fn default_transfer_log() -> String {
     }
     #[cfg(not(any(target_os = "windows", target_os = "macos")))]
     {
+        linux_default_transfer_log()
+    }
+}
+
+#[cfg(target_os = "linux")]
+fn running_from_appimage() -> bool {
+    std::env::var_os("APPIMAGE").is_some() || std::env::var_os("APPDIR").is_some()
+}
+
+#[cfg(target_os = "linux")]
+fn linux_user_log_dir() -> Option<std::path::PathBuf> {
+    dirs::config_dir().map(|d| d.join("fry-tftp-server"))
+}
+
+#[cfg(target_os = "linux")]
+fn linux_default_log_file() -> String {
+    if running_from_appimage() {
+        linux_user_log_dir()
+            .map(|d| d.join("fry-tftp-server.log").to_string_lossy().to_string())
+            .unwrap_or_default()
+    } else {
+        "/var/log/fry-tftp-server.log".to_string()
+    }
+}
+
+#[cfg(target_os = "linux")]
+fn linux_default_transfer_log() -> String {
+    if running_from_appimage() {
+        linux_user_log_dir()
+            .map(|d| d.join("fry-tftp-transfers.jsonl").to_string_lossy().to_string())
+            .unwrap_or_default()
+    } else {
         "/var/log/fry-tftp-transfers.jsonl".to_string()
     }
 }
