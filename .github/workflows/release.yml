@@ -115,7 +115,9 @@ jobs:
       - name: Build deb package
         if: matrix.deb
         run: |
-          cargo install cargo-deb
+          curl -sLO https://github.com/rust-native-release/cargo-deb/releases/latest/download/cargo-deb-ubuntu-latest.zip
+          unzip -o cargo-deb-ubuntu-latest.zip -d ~/.cargo/bin/
+          chmod +x ~/.cargo/bin/cargo-deb
           cargo deb --target x86_64-unknown-linux-gnu
           cp target/x86_64-unknown-linux-gnu/debian/*.deb ./
 
@@ -124,9 +126,8 @@ jobs:
         run: |
           sudo apt-get install -y alien
           DEB_FILE=$(ls target/x86_64-unknown-linux-gnu/debian/*.deb | head -1)
-          echo "Converting $DEB_FILE to rpm..."
           sudo alien -r "$DEB_FILE"
-          cp *.rpm ./ || true
+          cp *.rpm ./
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
