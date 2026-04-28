@@ -30,6 +30,7 @@ jobs:
             archive: tar.gz
             name: linux-x86_64-full
             deps: libglib2.0-dev libgtk-3-dev libxdo-dev libxcb-shape0-dev libxcb-xfixes0-dev
+            appimage: true
 
           - target: aarch64-unknown-linux-gnu
             os: ubuntu-latest
@@ -102,6 +103,13 @@ jobs:
         shell: pwsh
         run: |
           Compress-Archive -Path "target/${{ matrix.target }}/release/fry-tftp-server.exe" -DestinationPath "fry-tftp-server-${{ matrix.name }}.zip"
+
+      - name: Build AppImage
+        if: matrix.appimage
+        run: |
+          chmod +x deploy/appimage/build-appimage.sh
+          ./deploy/appimage/build-appimage.sh
+          mv fry-tftp-server-linux-x86_64.AppImage fry-tftp-server-${{ matrix.name }}.AppImage
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4

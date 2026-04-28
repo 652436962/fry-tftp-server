@@ -35,7 +35,7 @@ impl VirtualRoots {
             })
             .collect();
         // Sort by length descending for longest prefix match
-        roots.sort_by(|a, b| b.0.len().cmp(&a.0.len()));
+        roots.sort_by_key(|entry| std::cmp::Reverse(entry.0.len()));
         Self { roots }
     }
 

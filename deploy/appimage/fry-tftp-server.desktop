@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Fry TFTP Server
+Comment=High-performance cross-platform TFTP server
+Exec=fry-tftp-server
+Icon=fry-tftp-server
+Categories=Network;Utility;
+Terminal=false
+StartupNotify=true

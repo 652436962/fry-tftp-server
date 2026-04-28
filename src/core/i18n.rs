@@ -8,6 +8,7 @@ use std::collections::HashMap;
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Lang {
     En,
+    Zh,
     Ru,
     De,
     Es,
@@ -17,6 +18,8 @@ pub enum Lang {
 impl Lang {
     pub fn parse(s: &str) -> Self {
         match s.to_lowercase().as_str() {
+            "zh" | "zh-cn" | "zh_cn" | "zh-tw" | "zh_tw" | "zh-hk" | "zh_hk" | "chinese"
+            | "中文" | "简体中文" => Lang::Zh,
             "ru" | "russian" => Lang::Ru,
             "de" | "german" | "deutsch" => Lang::De,
             "es" | "spanish" | "español" => Lang::Es,
@@ -28,6 +31,7 @@ impl Lang {
     pub fn code(&self) -> &'static str {
         match self {
             Lang::En => "en",
+            Lang::Zh => "zh",
             Lang::Ru => "ru",
             Lang::De => "de",
             Lang::Es => "es",
@@ -38,6 +42,7 @@ impl Lang {
     pub fn name(&self) -> &'static str {
         match self {
             Lang::En => "English",
+            Lang::Zh => "简体中文",
             Lang::Ru => "Русский",
             Lang::De => "Deutsch",
             Lang::Es => "Español",
@@ -45,24 +50,31 @@ impl Lang {
         }
     }
 
-    pub const ALL: &'static [Lang] = &[Lang::En, Lang::Ru, Lang::De, Lang::Es, Lang::Fr];
+    pub const ALL: &'static [Lang] = &[Lang::En, Lang::Zh, Lang::Ru, Lang::De, Lang::Es, Lang::Fr];
 }
 
 pub struct I18n {
     lang: Lang,
     strings: HashMap<&'static str, &'static str>,
+    fallback: HashMap<&'static str, &'static str>,
 }
 
 impl I18n {
     pub fn new(lang: Lang) -> Self {
+        let fallback = en();
         let strings = match lang {
             Lang::En => en(),
+            Lang::Zh => zh(),
             Lang::Ru => ru(),
             Lang::De => de(),
             Lang::Es => es(),
             Lang::Fr => fr(),
         };
-        Self { lang, strings }
+        Self {
+            lang,
+            strings,
+            fallback,
+        }
     }
 
     pub fn lang(&self) -> Lang {
@@ -73,6 +85,7 @@ impl I18n {
         self.lang = lang;
         self.strings = match lang {
             Lang::En => en(),
+            Lang::Zh => zh(),
             Lang::Ru => ru(),
             Lang::De => de(),
             Lang::Es => es(),
@@ -82,7 +95,11 @@ impl I18n {
 
     /// Get translated string. Falls back to key if not found.
     pub fn t<'a>(&'a self, key: &'a str) -> &'a str {
-        self.strings.get(key).copied().unwrap_or(key)
+        self.strings
+            .get(key)
+            .or_else(|| self.fallback.get(key))
+            .copied()
+            .unwrap_or(key)
     }
 }
 
@@ -99,10 +116,15 @@ fn en() -> HashMap<&'static str, &'static str> {
     m.insert("error", "Error");
     m.insert("start_server", "Start Server");
     m.insert("stop_server", "Stop Server");
+    m.insert("show", "Show");
+    m.insert("quit", "Quit");
     m.insert("light_mode", "Light Mode");
     m.insert("dark_mode", "Dark Mode");
     m.insert("about", "About");
     m.insert("close", "Close");
+    m.insert("tray_running", "Fry TFTP Server - Running");
+    m.insert("tray_stopped", "Fry TFTP Server - Stopped");
+    m.insert("tray_error", "Fry TFTP Server - Error");
 
     // Tabs
     m.insert("tab_dashboard", "Dashboard");
@@ -167,6 +189,15 @@ fn en() -> HashMap<&'static str, &'static str> {
     m.insert("clear", "Clear");
     m.insert("copy_all", "Copy All");
     m.insert("export", "Export");
+    m.insert("clipboard_copied", "Copied to clipboard");
+    m.insert("copy_failed", "Copy failed:");
+    m.insert("export_logs_title", "Export logs");
+    m.insert("exported_to", "Exported to");
+    m.insert("export_failed", "Export failed:");
+    m.insert("clear_log_confirm", "Clear log?");
+    m.insert("clear_transfer_history_confirm", "Clear transfer history?");
+    m.insert("clear_gui_only", "GUI only");
+    m.insert("clear_gui_and_file", "GUI + File");
 
     // Config
     m.insert("configuration", "Configuration");
@@ -221,6 +252,33 @@ fn en() -> HashMap<&'static str, &'static str> {
     m.insert("export_toml", "Export TOML...");
     m.insert("language", "Language");
     m.insert("language_label", "Interface Language:");
+    m.insert("error_prefix", "Error:");
+    m.insert("config_applied_saved_to", "Config applied and saved to");
+    m.insert("config_applied_save_failed", "Config applied (save failed:");
+    m.insert("reset_current_status", "Reset to current running config");
+    m.insert(
+        "reset_defaults_status",
+        "Reset to defaults (click Apply to activate)",
+    );
+    m.insert("imported_from", "Imported from");
+    m.insert("parse_error", "Parse error:");
+    m.insert("read_error", "Read error:");
+    m.insert("write_error", "Write error:");
+    m.insert("serialize_error", "Serialize error:");
+    m.insert("config_exported", "Config exported");
+    m.insert("invalid_port", "Invalid port");
+    m.insert("invalid_max_log_lines", "Invalid max log lines");
+    m.insert("invalid_blksize", "Invalid blksize");
+    m.insert("invalid_max_blksize", "Invalid max blksize");
+    m.insert("invalid_windowsize", "Invalid windowsize");
+    m.insert("invalid_max_windowsize", "Invalid max windowsize");
+    m.insert("invalid_timeout", "Invalid timeout");
+    m.insert("invalid_max_sessions", "Invalid max sessions");
+    m.insert("invalid_max_retries", "Invalid max retries");
+    m.insert("invalid_session_timeout", "Invalid session timeout");
+    m.insert("invalid_per_ip_max_sessions", "Invalid per-IP max sessions");
+    m.insert("invalid_rate_limit", "Invalid rate limit");
+    m.insert("invalid_rate_limit_window", "Invalid rate limit window");
 
     // ACL
     m.insert("access_control_list", "Access Control List");
@@ -240,6 +298,16 @@ fn en() -> HashMap<&'static str, &'static str> {
     m.insert("add", "Add:");
     m.insert("invalid_cidr", "Invalid CIDR notation");
     m.insert("reset", "Reset");
+    m.insert("enabled_label", "On");
+    m.insert("move_label", "Move");
+    m.insert("description_placeholder", "Description...");
+    m.insert("cidr_placeholder", "192.168.1.0/24");
+    m.insert("down", "Dn");
+    m.insert("read", "Read");
+    m.insert("write", "Write");
+    m.insert("read_write", "Read, Write");
+    m.insert("acl_applied_saved_to", "ACL applied and saved to");
+    m.insert("acl_applied_save_failed", "ACL applied (save failed:");
 
     // Help
     m.insert("help_title", "Fry TFTP Server");
@@ -249,6 +317,90 @@ fn en() -> HashMap<&'static str, &'static str> {
     );
     m.insert("supported_rfcs", "Supported RFCs");
     m.insert("features", "Features");
+    m.insert("rfc_header_title", "Title");
+    m.insert("rfc_header_description", "Description");
+    m.insert("rfc1350_title", "TFTP Protocol (Revision 2)");
+    m.insert(
+        "rfc1350_desc",
+        "Base protocol: RRQ, WRQ, DATA, ACK, ERROR opcodes, octet and netascii modes",
+    );
+    m.insert("rfc2347_title", "Option Extension");
+    m.insert(
+        "rfc2347_desc",
+        "OACK negotiation for extended options between client and server",
+    );
+    m.insert("rfc2348_title", "Blocksize Option");
+    m.insert(
+        "rfc2348_desc",
+        "Configurable block size from 8 to 65464 bytes (default 512)",
+    );
+    m.insert("rfc2349_title", "Timeout & Transfer Size");
+    m.insert(
+        "rfc2349_desc",
+        "Timeout negotiation and tsize option for transfer size reporting",
+    );
+    m.insert("rfc7440_title", "Windowsize Option");
+    m.insert(
+        "rfc7440_desc",
+        "Sliding window for higher throughput (up to 65535 blocks per window)",
+    );
+    m.insert(
+        "feature_gui",
+        "GUI mode (egui) with dashboard, file browser, transfer history, log viewer",
+    );
+    m.insert(
+        "feature_tui",
+        "TUI mode (ratatui) for terminal-based operation",
+    );
+    m.insert(
+        "feature_headless",
+        "Headless mode for server/daemon deployment",
+    );
+    m.insert(
+        "feature_hot_reload",
+        "Hot-reload configuration via file watcher and SIGHUP",
+    );
+    m.insert(
+        "feature_acl",
+        "Access Control Lists (ACL) with whitelist/blacklist modes and CIDR support",
+    );
+    m.insert(
+        "feature_rate_limit",
+        "Per-IP rate limiting and session limits",
+    );
+    m.insert(
+        "feature_mmap",
+        "Memory-mapped file I/O for large file transfers",
+    );
+    m.insert(
+        "feature_sliding_window",
+        "Sliding window protocol for high throughput (250+ MB/s)",
+    );
+    m.insert(
+        "feature_transfer_modes",
+        "Netascii and octet transfer modes",
+    );
+    m.insert(
+        "feature_path_protection",
+        "Path traversal protection and symlink policy enforcement",
+    );
+    m.insert(
+        "feature_log_rotation",
+        "Circular log rotation with configurable line limits",
+    );
+    m.insert(
+        "feature_tray",
+        "System tray integration with status indicators",
+    );
+    m.insert(
+        "feature_service_support",
+        "Windows Service, systemd, and launchd support",
+    );
+    m.insert(
+        "feature_env_overrides",
+        "Environment variable overrides (TFTP_SERVER_*)",
+    );
+    m.insert("feature_export", "Export transfers as CSV/JSON");
 
     // About
     m.insert("about_title", "Fry TFTP Server");
@@ -259,6 +411,281 @@ fn en() -> HashMap<&'static str, &'static str> {
     m.insert("source", "Source:");
     m.insert("license", "License:");
     m.insert("built_with", "Built with Rust, egui, tokio, ratatui");
+    m.insert("ip_label", "IP:");
+    m.insert("records", "records");
+    m.insert("export_transfers_json_title", "Export transfers as JSON");
+    m.insert("export_transfers_csv_title", "Export transfers as CSV");
+    m.insert("unknown", "Unknown");
+
+    m
+}
+
+fn zh() -> HashMap<&'static str, &'static str> {
+    let mut m = HashMap::new();
+
+    m.insert("status", "状态:");
+    m.insert("listening", "监听:");
+    m.insert("running", "运行中");
+    m.insert("starting", "正在启动...");
+    m.insert("stopping", "正在停止...");
+    m.insert("stopped", "已停止");
+    m.insert("error", "错误");
+    m.insert("start_server", "启动服务器");
+    m.insert("stop_server", "停止服务器");
+    m.insert("show", "显示窗口");
+    m.insert("quit", "退出");
+    m.insert("light_mode", "浅色模式");
+    m.insert("dark_mode", "深色模式");
+    m.insert("about", "关于");
+    m.insert("close", "关闭");
+    m.insert("tray_running", "Fry TFTP Server - 运行中");
+    m.insert("tray_stopped", "Fry TFTP Server - 已停止");
+    m.insert("tray_error", "Fry TFTP Server - 错误");
+
+    m.insert("tab_dashboard", "仪表盘");
+    m.insert("tab_files", "文件");
+    m.insert("tab_transfers", "传输");
+    m.insert("tab_log", "日志");
+    m.insert("tab_config", "配置");
+    m.insert("tab_acl", "ACL");
+    m.insert("tab_help", "帮助");
+
+    m.insert("sessions", "会话");
+    m.insert("total", "总计");
+    m.insert("errors", "错误");
+
+    m.insert("active_sessions", "活动会话");
+    m.insert("tx_rate", "发送速率");
+    m.insert("rx_rate", "接收速率");
+    m.insert("active_transfers", "活动传输");
+    m.insert("no_active_transfers", "当前没有活动传输");
+    m.insert("client", "客户端");
+    m.insert("file", "文件");
+    m.insert("direction", "方向");
+    m.insert("progress", "进度");
+    m.insert("speed", "速度");
+    m.insert("duration", "时长");
+    m.insert("blksize", "块大小");
+    m.insert("window", "窗口");
+    m.insert("download", "下载");
+    m.insert("upload", "上传");
+    m.insert("bandwidth", "带宽");
+    m.insert("tx_mbps", "发送 (MB/s)");
+    m.insert("rx_mbps", "接收 (MB/s)");
+
+    m.insert("refresh", "刷新");
+    m.insert("change_root", "切换根目录...");
+    m.insert("up", "上移");
+    m.insert("name", "名称");
+    m.insert("size", "大小");
+    m.insert("type", "类型");
+    m.insert("directory", "目录");
+
+    m.insert("transfer_history", "传输历史");
+    m.insert("export_csv", "导出 CSV");
+    m.insert("export_json", "导出 JSON");
+    m.insert("status_label", "状态:");
+    m.insert("all", "全部");
+    m.insert("completed", "已完成");
+    m.insert("failed", "失败");
+    m.insert("cancelled", "已取消");
+    m.insert("retransmits", "重传");
+    m.insert("ok", "成功");
+    m.insert("fail", "失败");
+
+    m.insert("level", "级别:");
+    m.insert("filter", "筛选:");
+    m.insert("auto_scroll", "自动滚动");
+    m.insert("clear", "清空");
+    m.insert("copy_all", "全部复制");
+    m.insert("export", "导出");
+    m.insert("clipboard_copied", "已复制到剪贴板");
+    m.insert("copy_failed", "复制失败:");
+    m.insert("export_logs_title", "导出日志");
+    m.insert("exported_to", "已导出到");
+    m.insert("export_failed", "导出失败:");
+    m.insert("clear_log_confirm", "确定要清空日志吗？");
+    m.insert("clear_transfer_history_confirm", "确定要清空传输历史吗？");
+    m.insert("clear_gui_only", "仅清空界面");
+    m.insert("clear_gui_and_file", "界面和文件");
+
+    m.insert("configuration", "配置");
+    m.insert("server", "服务器");
+    m.insert(
+        "port_restart_note",
+        "* 端口、绑定地址和 IP 版本变更后需要重启生效",
+    );
+    m.insert("port", "端口 *:");
+    m.insert("bind_address", "绑定地址 *:");
+    m.insert("root_directory", "根目录:");
+    m.insert("browse", "浏览...");
+    m.insert("ip_version", "IP 版本 *:");
+    m.insert("dual_stack", "双栈");
+    m.insert("ipv4_only", "仅 IPv4");
+    m.insert("ipv6_only", "仅 IPv6");
+    m.insert("log_level", "日志级别:");
+    m.insert("max_log_lines", "最大日志行数:");
+    m.insert("transfer_log", "传输日志:");
+    m.insert("unlimited", "0 = 不限制");
+    m.insert("protocol", "协议");
+    m.insert("allow_write", "允许写入:");
+    m.insert("default_blksize", "默认块大小:");
+    m.insert("max_blksize", "最大块大小:");
+    m.insert("default_windowsize", "默认窗口大小:");
+    m.insert("max_windowsize", "最大窗口大小:");
+    m.insert("default_timeout", "默认超时:");
+    m.insert("session", "会话");
+    m.insert("max_sessions", "最大会话数:");
+    m.insert("max_retries", "最大重试次数:");
+    m.insert("session_timeout", "会话超时 (秒):");
+    m.insert("exponential_backoff", "指数退避:");
+    m.insert("security", "安全");
+    m.insert("per_ip_max_sessions", "每 IP 最大会话数:");
+    m.insert("per_ip_rate_limit", "每 IP 速率限制:");
+    m.insert("rate_limit_window", "速率限制窗口 (秒):");
+    m.insert("dashboard_section", "仪表盘");
+    m.insert("show_bandwidth_chart", "显示带宽图表:");
+    m.insert("filesystem", "文件系统");
+    m.insert("max_file_size", "最大文件大小:");
+    m.insert("allow_overwrite", "允许覆盖:");
+    m.insert("create_directories", "创建目录:");
+    m.insert("follow_symlinks", "跟随符号链接:");
+    m.insert("apply", "应用");
+    m.insert("restart_note", "（端口/绑定/IP 变更需要重启服务器）");
+    m.insert("reset_current", "重置为当前值");
+    m.insert("reset_defaults", "恢复默认值");
+    m.insert("import_toml", "导入 TOML...");
+    m.insert("export_toml", "导出 TOML...");
+    m.insert("language", "语言");
+    m.insert("language_label", "界面语言:");
+    m.insert("error_prefix", "错误:");
+    m.insert("config_applied_saved_to", "配置已应用并保存到");
+    m.insert("config_applied_save_failed", "配置已应用（保存失败:");
+    m.insert("reset_current_status", "已重置为当前运行配置");
+    m.insert(
+        "reset_defaults_status",
+        "已重置为默认配置（点击应用后生效）",
+    );
+    m.insert("imported_from", "已从以下位置导入");
+    m.insert("parse_error", "解析错误:");
+    m.insert("read_error", "读取错误:");
+    m.insert("write_error", "写入错误:");
+    m.insert("serialize_error", "序列化错误:");
+    m.insert("config_exported", "配置已导出");
+    m.insert("invalid_port", "端口无效");
+    m.insert("invalid_max_log_lines", "最大日志行数无效");
+    m.insert("invalid_blksize", "块大小无效");
+    m.insert("invalid_max_blksize", "最大块大小无效");
+    m.insert("invalid_windowsize", "窗口大小无效");
+    m.insert("invalid_max_windowsize", "最大窗口大小无效");
+    m.insert("invalid_timeout", "超时值无效");
+    m.insert("invalid_max_sessions", "最大会话数无效");
+    m.insert("invalid_max_retries", "最大重试次数无效");
+    m.insert("invalid_session_timeout", "会话超时无效");
+    m.insert("invalid_per_ip_max_sessions", "每 IP 最大会话数无效");
+    m.insert("invalid_rate_limit", "速率限制无效");
+    m.insert("invalid_rate_limit_window", "速率限制窗口无效");
+
+    m.insert("access_control_list", "访问控制列表");
+    m.insert("mode", "模式:");
+    m.insert("disabled", "禁用");
+    m.insert("whitelist", "白名单");
+    m.insert("blacklist", "黑名单");
+    m.insert("no_acl_rules", "尚未配置 ACL 规则");
+    m.insert(
+        "acl_recommendation",
+        "如果服务器暴露在网络中，建议添加 ACL 规则。可使用白名单仅允许可信 IP 段，或使用黑名单阻止特定地址。",
+    );
+    m.insert("action", "动作");
+    m.insert("source_cidr", "来源 (CIDR)");
+    m.insert("operations", "操作");
+    m.insert("comment", "备注");
+    m.insert("allow", "允许");
+    m.insert("deny", "拒绝");
+    m.insert("add_rule", "添加规则");
+    m.insert("add", "添加:");
+    m.insert("invalid_cidr", "CIDR 格式无效");
+    m.insert("reset", "重置");
+    m.insert("enabled_label", "启用");
+    m.insert("move_label", "移动");
+    m.insert("description_placeholder", "描述...");
+    m.insert("cidr_placeholder", "192.168.1.0/24");
+    m.insert("down", "下移");
+    m.insert("read", "读取");
+    m.insert("write", "写入");
+    m.insert("read_write", "读取、写入");
+    m.insert("acl_applied_saved_to", "ACL 已应用并保存到");
+    m.insert("acl_applied_save_failed", "ACL 已应用（保存失败:");
+
+    m.insert("help_title", "Fry TFTP Server");
+    m.insert("help_subtitle", "高性能跨平台 TFTP 服务器");
+    m.insert("supported_rfcs", "支持的 RFC");
+    m.insert("features", "功能特性");
+    m.insert("rfc_header_title", "标题");
+    m.insert("rfc_header_description", "说明");
+    m.insert("rfc1350_title", "TFTP 协议（修订版 2）");
+    m.insert(
+        "rfc1350_desc",
+        "基础协议：RRQ、WRQ、DATA、ACK、ERROR 操作码，以及 octet 与 netascii 模式",
+    );
+    m.insert("rfc2347_title", "选项扩展");
+    m.insert("rfc2347_desc", "客户端与服务器之间对扩展选项进行 OACK 协商");
+    m.insert("rfc2348_title", "块大小选项");
+    m.insert(
+        "rfc2348_desc",
+        "可配置块大小范围为 8 到 65464 字节（默认 512）",
+    );
+    m.insert("rfc2349_title", "超时与传输大小");
+    m.insert("rfc2349_desc", "支持超时协商和 tsize 传输大小报告选项");
+    m.insert("rfc7440_title", "窗口大小选项");
+    m.insert(
+        "rfc7440_desc",
+        "通过滑动窗口提升吞吐量（每个窗口最多 65535 个块）",
+    );
+    m.insert(
+        "feature_gui",
+        "GUI 模式（egui），提供仪表盘、文件浏览、传输历史和日志查看功能",
+    );
+    m.insert("feature_tui", "TUI 模式（ratatui），适合终端环境操作");
+    m.insert("feature_headless", "无头模式，适用于服务器或守护进程部署");
+    m.insert("feature_hot_reload", "通过文件监视与 SIGHUP 实现配置热重载");
+    m.insert(
+        "feature_acl",
+        "访问控制列表（ACL），支持白名单/黑名单模式和 CIDR",
+    );
+    m.insert("feature_rate_limit", "支持按 IP 进行速率限制和会话数量限制");
+    m.insert("feature_mmap", "大文件传输使用内存映射文件 I/O");
+    m.insert(
+        "feature_sliding_window",
+        "滑动窗口协议带来高吞吐量（250+ MB/s）",
+    );
+    m.insert("feature_transfer_modes", "支持 Netascii 和 Octet 传输模式");
+    m.insert(
+        "feature_path_protection",
+        "提供路径穿越防护和符号链接策略控制",
+    );
+    m.insert("feature_log_rotation", "支持可配置日志行数上限的循环日志");
+    m.insert("feature_tray", "系统托盘集成，并带有状态指示");
+    m.insert(
+        "feature_service_support",
+        "支持 Windows Service、systemd 和 launchd",
+    );
+    m.insert("feature_env_overrides", "支持环境变量覆盖（TFTP_SERVER_*）");
+    m.insert("feature_export", "可将传输记录导出为 CSV/JSON");
+
+    m.insert("about_title", "Fry TFTP Server");
+    m.insert("version", "版本:");
+    m.insert("author", "作者:");
+    m.insert("author_name", "Viacheslav Gordeev");
+    m.insert("email", "邮箱:");
+    m.insert("source", "源码:");
+    m.insert("license", "许可证:");
+    m.insert("built_with", "基于 Rust、egui、tokio 和 ratatui 构建");
+    m.insert("ip_label", "IP:");
+    m.insert("records", "条记录");
+    m.insert("export_transfers_json_title", "将传输记录导出为 JSON");
+    m.insert("export_transfers_csv_title", "将传输记录导出为 CSV");
+    m.insert("unknown", "未知");
 
     m
 }
@@ -276,10 +703,15 @@ fn ru() -> HashMap<&'static str, &'static str> {
     m.insert("error", "Ошибка");
     m.insert("start_server", "Запустить");
     m.insert("stop_server", "Остановить");
+    m.insert("show", "Показать");
+    m.insert("quit", "Выход");
     m.insert("light_mode", "Светлая тема");
     m.insert("dark_mode", "Тёмная тема");
     m.insert("about", "О программе");
     m.insert("close", "Закрыть");
+    m.insert("tray_running", "Fry TFTP Server - Работает");
+    m.insert("tray_stopped", "Fry TFTP Server - Остановлен");
+    m.insert("tray_error", "Fry TFTP Server - Ошибка");
 
     // Tabs
     m.insert("tab_dashboard", "Обзор");
@@ -450,10 +882,15 @@ fn de() -> HashMap<&'static str, &'static str> {
     m.insert("error", "Fehler");
     m.insert("start_server", "Server starten");
     m.insert("stop_server", "Server stoppen");
+    m.insert("show", "Anzeigen");
+    m.insert("quit", "Beenden");
     m.insert("light_mode", "Helles Design");
     m.insert("dark_mode", "Dunkles Design");
     m.insert("about", "Über");
     m.insert("close", "Schließen");
+    m.insert("tray_running", "Fry TFTP Server - Läuft");
+    m.insert("tray_stopped", "Fry TFTP Server - Gestoppt");
+    m.insert("tray_error", "Fry TFTP Server - Fehler");
 
     // Tabs
     m.insert("tab_dashboard", "Übersicht");
@@ -627,10 +1064,15 @@ fn es() -> HashMap<&'static str, &'static str> {
     m.insert("error", "Error");
     m.insert("start_server", "Iniciar servidor");
     m.insert("stop_server", "Detener servidor");
+    m.insert("show", "Mostrar");
+    m.insert("quit", "Salir");
     m.insert("light_mode", "Tema claro");
     m.insert("dark_mode", "Tema oscuro");
     m.insert("about", "Acerca de");
     m.insert("close", "Cerrar");
+    m.insert("tray_running", "Fry TFTP Server - En ejecución");
+    m.insert("tray_stopped", "Fry TFTP Server - Detenido");
+    m.insert("tray_error", "Fry TFTP Server - Error");
 
     // Tabs
     m.insert("tab_dashboard", "Panel");
@@ -800,10 +1242,15 @@ fn fr() -> HashMap<&'static str, &'static str> {
     m.insert("error", "Erreur");
     m.insert("start_server", "Démarrer");
     m.insert("stop_server", "Arrêter");
+    m.insert("show", "Afficher");
+    m.insert("quit", "Quitter");
     m.insert("light_mode", "Thème clair");
     m.insert("dark_mode", "Thème sombre");
     m.insert("about", "À propos");
     m.insert("close", "Fermer");
+    m.insert("tray_running", "Fry TFTP Server - En cours");
+    m.insert("tray_stopped", "Fry TFTP Server - Arrêté");
+    m.insert("tray_error", "Fry TFTP Server - Erreur");
 
     m.insert("tab_dashboard", "Tableau de bord");
     m.insert("tab_files", "Fichiers");

@@ -777,12 +777,11 @@ impl TuiApp {
                     }
                 }
             }
-            Tab::Config => {
-                if self.config_scroll < self.config_items.len() {
-                    self.config_edit_buf = self.config_items[self.config_scroll].2.clone();
-                    self.config_editing = Some(self.config_scroll);
-                }
+            Tab::Config if self.config_scroll < self.config_items.len() => {
+                self.config_edit_buf = self.config_items[self.config_scroll].2.clone();
+                self.config_editing = Some(self.config_scroll);
             }
+            Tab::Config => {}
             _ => {}
         }
     }

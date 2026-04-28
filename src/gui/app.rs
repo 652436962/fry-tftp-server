@@ -16,6 +16,43 @@ use crate::gui::tabs::{self, Tab};
 use crate::gui::theme::Theme;
 use crate::gui::tray::{self, TrayState, TrayVisualState};
 
+fn install_cjk_fallback_fonts(ctx: &egui::Context) {
+    use egui::{FontData, FontDefinitions, FontFamily};
+
+    const CANDIDATE_FONTS: &[&str] = &[
+        "/usr/share/fonts/opentype/source-han-cjk/SourceHanSansSC-Regular.otf",
+        "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
+        "/usr/share/fonts/opentype/noto/NotoSansCJKSC-Regular.otf",
+        "/usr/share/fonts/truetype/noto/NotoSansCJK-Regular.ttc",
+        "/usr/share/fonts/truetype/wqy/wqy-zenhei.ttc",
+        "/usr/share/fonts/truetype/arphic/uming.ttc",
+    ];
+
+    let Some(font_path) = CANDIDATE_FONTS.iter().find(|path| std::path::Path::new(path).exists())
+    else {
+        return;
+    };
+
+    let Ok(font_bytes) = std::fs::read(font_path) else {
+        return;
+    };
+
+    let mut fonts = FontDefinitions::default();
+    fonts.font_data.insert(
+        "cjk_fallback".to_string(),
+        std::sync::Arc::new(FontData::from_owned(font_bytes)),
+    );
+
+    if let Some(family) = fonts.families.get_mut(&FontFamily::Proportional) {
+        family.push("cjk_fallback".to_string());
+    }
+    if let Some(family) = fonts.families.get_mut(&FontFamily::Monospace) {
+        family.push("cjk_fallback".to_string());
+    }
+
+    ctx.set_fonts(fonts);
+}
+
 fn format_bytes_short(bytes: u64) -> String {
     if bytes >= 1_000_000_000 {
         format!("{:.1} GB", bytes as f64 / 1_000_000_000.0)
@@ -49,17 +86,20 @@ pub struct TftpApp {
     config_state: ConfigState,
     acl_state: AclState,
     help_state: HelpState,
+    quitting: bool,
 }
 
 impl TftpApp {
     pub fn new(
-        _cc: &eframe::CreationContext<'_>,
+        cc: &eframe::CreationContext<'_>,
         state: Arc<AppState>,
         log_buffer: LogBuffer,
         tray_state: Option<TrayState>,
     ) -> Self {
         let config = state.config();
         let root = config.server.root.clone();
+
+        install_cjk_fallback_fonts(&cc.egui_ctx);
 
         Self {
             state,
@@ -80,6 +120,7 @@ impl TftpApp {
             config_state: ConfigState::from_config(&config),
             acl_state: AclState::from_config(&config.acl),
             help_state: HelpState::new(),
+            quitting: false,
         }
     }
 
@@ -101,6 +142,11 @@ impl eframe::App for TftpApp {
         self.theme.apply(ctx);
         ctx.request_repaint_after(Duration::from_millis(250));
 
+        if !self.quitting && ctx.input(|i| i.viewport().close_requested()) {
+            ctx.send_viewport_cmd(egui::ViewportCommand::CancelClose);
+            ctx.send_viewport_cmd(egui::ViewportCommand::Visible(false));
+        }
+
         // Sync language from config
         let cfg_lang = Lang::parse(&self.state.config().gui.language);
         if cfg_lang != self.i18n.lang() {
@@ -109,9 +155,11 @@ impl eframe::App for TftpApp {
 
         // Handle system tray events
         if let Some(ref tray) = self.tray_state {
+            tray::pump_event_loop();
+
             let visual = self.current_tray_visual();
             if visual != self.last_tray_visual {
-                tray::update_tray_icon(tray, visual);
+                tray::update_tray_icon(tray, visual, &self.i18n);
                 self.last_tray_visual = visual;
             }
 
@@ -125,6 +173,7 @@ impl eframe::App for TftpApp {
                         self.state.cancel_shutdown();
                     }
                     tray::TrayAction::Quit => {
+                        self.quitting = true;
                         self.state.cancel_shutdown();
                         ctx.send_viewport_cmd(egui::ViewportCommand::Close);
                     }
@@ -185,27 +234,25 @@ impl eframe::App for TftpApp {
                     }
 
                     match server_state {
-                        ServerState::Running => {
-                            if ui.button(t.t("stop_server")).clicked() {
-                                self.state.cancel_shutdown();
-                            }
+                        ServerState::Running if ui.button(t.t("stop_server")).clicked() => {
+                            self.state.cancel_shutdown();
                         }
-                        ServerState::Stopped | ServerState::Error => {
-                            if ui.button(t.t("start_server")).clicked() {
-                                let state = self.state.clone();
-                                self.dashboard = DashboardState::new();
-                                self.rt_handle.spawn(async move {
-                                    let new_config = state
-                                        .reload_config()
-                                        .map(|()| (*state.config()).clone())
-                                        .unwrap_or_default();
-                                    state.reset_for_restart(new_config).await;
-                                    if let Err(e) = crate::core::run_server(state.clone()).await {
-                                        tracing::error!(error=%e, "server start failed");
-                                        state.set_server_state(ServerState::Error);
-                                    }
-                                });
-                            }
+                        ServerState::Stopped | ServerState::Error
+                            if ui.button(t.t("start_server")).clicked() =>
+                        {
+                            let state = self.state.clone();
+                            self.dashboard = DashboardState::new();
+                            self.rt_handle.spawn(async move {
+                                let new_config = state
+                                    .reload_config()
+                                    .map(|()| (*state.config()).clone())
+                                    .unwrap_or_default();
+                                state.reset_for_restart(new_config).await;
+                                if let Err(e) = crate::core::run_server(state.clone()).await {
+                                    tracing::error!(error=%e, "server start failed");
+                                    state.set_server_state(ServerState::Error);
+                                }
+                            });
                         }
                         _ => {}
                     }

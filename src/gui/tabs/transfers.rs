@@ -57,9 +57,9 @@ fn format_bytes(bytes: u64) -> String {
     }
 }
 
-fn export_json(records: &[&TransferRecord]) {
+fn export_json(records: &[&TransferRecord], i18n: &I18n) {
     if let Some(path) = rfd::FileDialog::new()
-        .set_title("Export transfers as JSON")
+        .set_title(i18n.t("export_transfers_json_title"))
         .add_filter("JSON", &["json"])
         .set_file_name("transfers.json")
         .save_file()
@@ -101,9 +101,9 @@ fn export_json(records: &[&TransferRecord]) {
     }
 }
 
-fn export_csv(records: &[&TransferRecord]) {
+fn export_csv(records: &[&TransferRecord], i18n: &I18n) {
     if let Some(path) = rfd::FileDialog::new()
-        .set_title("Export transfers as CSV")
+        .set_title(i18n.t("export_transfers_csv_title"))
         .add_filter("CSV", &["csv"])
         .set_file_name("transfers.csv")
         .save_file()
@@ -150,7 +150,7 @@ pub fn draw(
 
     // Filters + Export
     ui.horizontal(|ui| {
-        ui.label("IP:");
+        ui.label(i18n.t("ip_label"));
         ui.add(egui::TextEdit::singleline(&mut transfers.filter_ip).desired_width(120.0));
         ui.label(i18n.t("file"));
         ui.add(egui::TextEdit::singleline(&mut transfers.filter_filename).desired_width(120.0));
@@ -187,16 +187,16 @@ pub fn draw(
             .resizable(false)
             .anchor(egui::Align2::CENTER_CENTER, [0.0, 0.0])
             .show(ui.ctx(), |ui| {
-                ui.label("Clear transfer history?");
+                ui.label(i18n.t("clear_transfer_history_confirm"));
                 ui.add_space(8.0);
                 ui.horizontal(|ui| {
-                    if ui.button("GUI only").clicked() {
+                    if ui.button(i18n.t("clear_gui_only")).clicked() {
                         if let Ok(mut h) = state.transfer_history.try_write() {
                             h.clear();
                         }
                         transfers.show_clear_popup = false;
                     }
-                    if ui.button("GUI + File").clicked() {
+                    if ui.button(i18n.t("clear_gui_and_file")).clicked() {
                         if let Ok(mut h) = state.transfer_history.try_write() {
                             h.clear();
                         }
@@ -313,12 +313,12 @@ pub fn draw(
     }
 
     ui.horizontal(|ui| {
-        ui.label(format!("{} records", filtered.len()));
+        ui.label(format!("{} {}", filtered.len(), i18n.t("records")));
         if ui.button(i18n.t("export_csv")).clicked() {
-            export_csv(&filtered);
+            export_csv(&filtered, i18n);
         }
         if ui.button(i18n.t("export_json")).clicked() {
-            export_json(&filtered);
+            export_json(&filtered, i18n);
         }
     });
 

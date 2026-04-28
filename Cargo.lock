@@ -1658,6 +1658,7 @@ dependencies = [
  "eframe",
  "egui",
  "egui_plot",
+ "gtk",
  "ipnet",
  "memmap2",
  "nix",

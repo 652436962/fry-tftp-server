@@ -14,7 +14,7 @@
   <img src="https://img.shields.io/badge/rust-1.75%2B-orange" alt="Rust 1.75+">
   <img src="https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey" alt="Platform">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="License: MIT"></a>
-  <img src="https://img.shields.io/badge/i18n-EN%20%7C%20RU%20%7C%20DE%20%7C%20ES%20%7C%20FR-blueviolet" alt="Languages">
+  <img src="https://img.shields.io/badge/i18n-EN%20%7C%20ZH%20%7C%20RU%20%7C%20DE%20%7C%20ES%20%7C%20FR-blueviolet" alt="Languages">
 </p>
 
 ---
@@ -29,7 +29,7 @@ Fry TFTP Server is a modern TFTP server built in Rust, designed for network engi
 - **10x faster** than traditional TFTP servers with sliding window & mmap
 - **Enterprise-ready** &mdash; ACL, rate limiting, hot-reload config, service integration
 - **Cross-platform** &mdash; runs on Windows, macOS, and Linux
-- **Multilingual** &mdash; English, Russian, German, Spanish, French
+- **Multilingual** &mdash; English, Simplified Chinese, Russian, German, Spanish, French
 
 ---
 
@@ -56,7 +56,7 @@ Fry TFTP Server is a modern TFTP server built in Rust, designed for network engi
 | **TUI mode** | Full-featured terminal interface with the same capabilities |
 | **Headless mode** | Daemon with IPC control socket (Unix/Windows named pipe) |
 | **Deployment** | Docker, systemd, launchd, Windows Service |
-| **Internationalization** | 5 languages: EN, RU, DE, ES, FR (auto-detected from OS locale) |
+| **Internationalization** | 6 languages: EN, ZH, RU, DE, ES, FR (auto-detected from OS locale) |
 
 ---
 
@@ -106,6 +106,17 @@ Download `fry-tftp-server-windows-x86_64.zip` from [Releases](https://github.com
 
 Port 69 requires Administrator privileges on Windows. Right-click → **Run as Administrator**, or use `-p <port>` with a port above 1024.
 
+### Linux AppImage
+
+Download `fry-tftp-server-linux-x86_64.AppImage` from [Releases](https://github.com/qulisun/fry-tftp-server/releases), then run:
+
+```bash
+chmod +x fry-tftp-server-linux-x86_64.AppImage
+./fry-tftp-server-linux-x86_64.AppImage
+```
+
+The GUI now includes Simplified Chinese. The interface language is auto-detected from the OS locale and can also be changed in the GUI configuration page.
+
 ---
 
 ## Build Options
@@ -121,6 +132,13 @@ Port 69 requires Administrator privileges on Windows. Right-click → **Run as A
 
 ```bash
 sudo apt-get install -y libglib2.0-dev libgtk-3-dev libxdo-dev libxcb-shape0-dev libxcb-xfixes0-dev
+```
+
+### Build AppImage
+
+```bash
+chmod +x deploy/appimage/build-appimage.sh
+./deploy/appimage/build-appimage.sh
 ```
 
 ---

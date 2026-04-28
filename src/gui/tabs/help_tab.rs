@@ -46,35 +46,33 @@ pub fn draw(ui: &mut Ui, _help: &mut HelpState, i18n: &I18n) {
             .min_col_width(100.0)
             .show(ui, |ui| {
                 ui.strong("RFC");
-                ui.strong("Title");
-                ui.strong("Description");
+                ui.strong(i18n.t("rfc_header_title"));
+                ui.strong(i18n.t("rfc_header_description"));
                 ui.end_row();
 
                 ui.label("RFC 1350");
-                ui.label("TFTP Protocol (Revision 2)");
-                ui.label(
-                    "Base protocol: RRQ, WRQ, DATA, ACK, ERROR opcodes, octet and netascii modes",
-                );
+                ui.label(i18n.t("rfc1350_title"));
+                ui.label(i18n.t("rfc1350_desc"));
                 ui.end_row();
 
                 ui.label("RFC 2347");
-                ui.label("Option Extension");
-                ui.label("OACK negotiation for extended options between client and server");
+                ui.label(i18n.t("rfc2347_title"));
+                ui.label(i18n.t("rfc2347_desc"));
                 ui.end_row();
 
                 ui.label("RFC 2348");
-                ui.label("Blocksize Option");
-                ui.label("Configurable block size from 8 to 65464 bytes (default 512)");
+                ui.label(i18n.t("rfc2348_title"));
+                ui.label(i18n.t("rfc2348_desc"));
                 ui.end_row();
 
                 ui.label("RFC 2349");
-                ui.label("Timeout & Transfer Size");
-                ui.label("Timeout negotiation and tsize option for transfer size reporting");
+                ui.label(i18n.t("rfc2349_title"));
+                ui.label(i18n.t("rfc2349_desc"));
                 ui.end_row();
 
                 ui.label("RFC 7440");
-                ui.label("Windowsize Option");
-                ui.label("Sliding window for higher throughput (up to 65535 blocks per window)");
+                ui.label(i18n.t("rfc7440_title"));
+                ui.label(i18n.t("rfc7440_desc"));
                 ui.end_row();
             });
 
@@ -87,21 +85,21 @@ pub fn draw(ui: &mut Ui, _help: &mut HelpState, i18n: &I18n) {
         ui.add_space(4.0);
 
         let features = [
-            "GUI mode (egui) with dashboard, file browser, transfer history, log viewer",
-            "TUI mode (ratatui) for terminal-based operation",
-            "Headless mode for server/daemon deployment",
-            "Hot-reload configuration via file watcher and SIGHUP",
-            "Access Control Lists (ACL) with whitelist/blacklist modes and CIDR support",
-            "Per-IP rate limiting and session limits",
-            "Memory-mapped file I/O for large file transfers",
-            "Sliding window protocol for high throughput (250+ MB/s)",
-            "Netascii and octet transfer modes",
-            "Path traversal protection and symlink policy enforcement",
-            "Circular log rotation with configurable line limits",
-            "System tray integration with status indicators",
-            "Windows Service, systemd, and launchd support",
-            "Environment variable overrides (TFTP_SERVER_*)",
-            "Export transfers as CSV/JSON",
+            i18n.t("feature_gui"),
+            i18n.t("feature_tui"),
+            i18n.t("feature_headless"),
+            i18n.t("feature_hot_reload"),
+            i18n.t("feature_acl"),
+            i18n.t("feature_rate_limit"),
+            i18n.t("feature_mmap"),
+            i18n.t("feature_sliding_window"),
+            i18n.t("feature_transfer_modes"),
+            i18n.t("feature_path_protection"),
+            i18n.t("feature_log_rotation"),
+            i18n.t("feature_tray"),
+            i18n.t("feature_service_support"),
+            i18n.t("feature_env_overrides"),
+            i18n.t("feature_export"),
         ];
         for feat in &features {
             ui.horizontal(|ui| {

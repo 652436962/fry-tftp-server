@@ -68,7 +68,9 @@ fn detect_system_language() -> String {
         .to_lowercase();
 
     // locale is typically "en_US.UTF-8", "ru_RU.UTF-8", "de_DE.UTF-8" etc.
-    let code = if locale.starts_with("ru") {
+    let code = if locale.starts_with("zh") {
+        "zh"
+    } else if locale.starts_with("ru") {
         "ru"
     } else if locale.starts_with("de") {
         "de"

@@ -181,7 +181,7 @@ fn draw_rule_row(
             };
             let resp = ui.add(
                 egui::TextEdit::singleline(&mut rule.source)
-                    .hint_text("192.168.1.0/24")
+                    .hint_text(i18n.t("cidr_placeholder"))
                     .desired_width(cw.source - 8.0)
                     .text_color(color),
             );
@@ -196,15 +196,32 @@ fn draw_rule_row(
         // Operations
         ui.allocate_ui(egui::vec2(cw.ops, 20.0), |ui| {
             let changed = egui::ComboBox::from_id_salt(format!("acl_ops_{}", i))
-                .selected_text(&rule.operations)
+                .selected_text(match rule.operations.as_str() {
+                    "read" => i18n.t("read"),
+                    "write" => i18n.t("write"),
+                    "read, write" => i18n.t("read_write"),
+                    _ => &rule.operations,
+                })
                 .width(cw.ops - 12.0)
                 .show_ui(ui, |ui| {
                     let mut c = false;
-                    for opt in &["read", "write", "read, write"] {
-                        c |= ui
-                            .selectable_value(&mut rule.operations, opt.to_string(), *opt)
-                            .changed();
-                    }
+                    c |= ui
+                        .selectable_value(&mut rule.operations, "read".to_string(), i18n.t("read"))
+                        .changed();
+                    c |= ui
+                        .selectable_value(
+                            &mut rule.operations,
+                            "write".to_string(),
+                            i18n.t("write"),
+                        )
+                        .changed();
+                    c |= ui
+                        .selectable_value(
+                            &mut rule.operations,
+                            "read, write".to_string(),
+                            i18n.t("read_write"),
+                        )
+                        .changed();
                     c
                 })
                 .inner
@@ -219,7 +236,7 @@ fn draw_rule_row(
             if ui
                 .add(
                     egui::TextEdit::singleline(&mut rule.comment)
-                        .hint_text("Description...")
+                        .hint_text(i18n.t("description_placeholder"))
                         .desired_width(cw.comment - 8.0),
                 )
                 .changed()
@@ -239,13 +256,16 @@ fn draw_rule_row(
         ui.allocate_ui(egui::vec2(cw.move_btns, 20.0), |ui| {
             ui.spacing_mut().item_spacing.x = 1.0;
             if ui
-                .add_enabled(i > 0, egui::Button::new("Up").small())
+                .add_enabled(i > 0, egui::Button::new(i18n.t("up")).small())
                 .clicked()
             {
                 swap = Some((i, i - 1));
             }
             if ui
-                .add_enabled(i + 1 < rule_count, egui::Button::new("Dn").small())
+                .add_enabled(
+                    i + 1 < rule_count,
+                    egui::Button::new(i18n.t("down")).small(),
+                )
                 .clicked()
             {
                 swap = Some((i, i + 1));
@@ -341,10 +361,10 @@ pub fn draw(ui: &mut Ui, state: &Arc<AppState>, acl: &mut AclState, i18n: &I18n)
                         ui.strong(i18n.t("comment"));
                     });
                     ui.allocate_ui(egui::vec2(cw.enabled, 16.0), |ui| {
-                        ui.strong("On");
+                        ui.strong(i18n.t("enabled_label"));
                     });
                     ui.allocate_ui(egui::vec2(cw.move_btns, 16.0), |ui| {
-                        ui.strong("Move");
+                        ui.strong(i18n.t("move_label"));
                     });
                 });
 
@@ -419,7 +439,7 @@ pub fn draw(ui: &mut Ui, state: &Arc<AppState>, acl: &mut AclState, i18n: &I18n)
         };
         let resp = ui.add(
             egui::TextEdit::singleline(&mut acl.new_source)
-                .hint_text("192.168.1.0/24")
+                .hint_text(i18n.t("cidr_placeholder"))
                 .desired_width(cw.source - 8.0)
                 .text_color(new_color),
         );
@@ -428,17 +448,26 @@ pub fn draw(ui: &mut Ui, state: &Arc<AppState>, acl: &mut AclState, i18n: &I18n)
         }
 
         egui::ComboBox::from_id_salt("new_acl_ops")
-            .selected_text(&acl.new_ops)
+            .selected_text(match acl.new_ops.as_str() {
+                "read" => i18n.t("read"),
+                "write" => i18n.t("write"),
+                "read, write" => i18n.t("read_write"),
+                _ => &acl.new_ops,
+            })
             .width(cw.ops - 12.0)
             .show_ui(ui, |ui| {
-                for opt in &["read", "write", "read, write"] {
-                    ui.selectable_value(&mut acl.new_ops, opt.to_string(), *opt);
-                }
+                ui.selectable_value(&mut acl.new_ops, "read".to_string(), i18n.t("read"));
+                ui.selectable_value(&mut acl.new_ops, "write".to_string(), i18n.t("write"));
+                ui.selectable_value(
+                    &mut acl.new_ops,
+                    "read, write".to_string(),
+                    i18n.t("read_write"),
+                );
             });
 
         ui.add(
             egui::TextEdit::singleline(&mut acl.new_comment)
-                .hint_text("Description...")
+                .hint_text(i18n.t("description_placeholder"))
                 .desired_width(cw.comment - 8.0),
         );
 
@@ -473,10 +502,11 @@ pub fn draw(ui: &mut Ui, state: &Arc<AppState>, acl: &mut AclState, i18n: &I18n)
             acl.dirty = false;
             match save_result {
                 Ok(path) => {
-                    acl.status_message = format!("ACL applied & saved to {}", path.display());
+                    acl.status_message =
+                        format!("{} {}", i18n.t("acl_applied_saved_to"), path.display());
                 }
                 Err(e) => {
-                    acl.status_message = format!("ACL applied (save failed: {})", e);
+                    acl.status_message = format!("{} {})", i18n.t("acl_applied_save_failed"), e);
                 }
             }
         }

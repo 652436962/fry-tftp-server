@@ -121,14 +121,14 @@ pub fn draw(
                 &log_state.filter_text,
             );
             match arboard::Clipboard::new().and_then(|mut cb| cb.set_text(text)) {
-                Ok(_) => log_state.copy_status = "Copied to clipboard".to_string(),
-                Err(e) => log_state.copy_status = format!("Copy failed: {}", e),
+                Ok(_) => log_state.copy_status = i18n.t("clipboard_copied").to_string(),
+                Err(e) => log_state.copy_status = format!("{} {}", i18n.t("copy_failed"), e),
             }
         }
 
         if ui.button(i18n.t("export")).clicked() {
             if let Some(path) = rfd::FileDialog::new()
-                .set_title("Export logs")
+                .set_title(i18n.t("export_logs_title"))
                 .add_filter("Log", &["log", "txt"])
                 .set_file_name("server.log")
                 .save_file()
@@ -139,8 +139,11 @@ pub fn draw(
                     &log_state.filter_text,
                 );
                 match std::fs::write(&path, text) {
-                    Ok(_) => log_state.copy_status = format!("Exported to {}", path.display()),
-                    Err(e) => log_state.copy_status = format!("Export failed: {}", e),
+                    Ok(_) => {
+                        log_state.copy_status =
+                            format!("{} {}", i18n.t("exported_to"), path.display())
+                    }
+                    Err(e) => log_state.copy_status = format!("{} {}", i18n.t("export_failed"), e),
                 }
             }
         }
@@ -157,15 +160,15 @@ pub fn draw(
             .resizable(false)
             .anchor(egui::Align2::CENTER_CENTER, [0.0, 0.0])
             .show(ui.ctx(), |ui| {
-                ui.label("Clear log?");
+                ui.label(i18n.t("clear_log_confirm"));
                 ui.add_space(8.0);
                 ui.horizontal(|ui| {
-                    if ui.button("GUI only").clicked() {
+                    if ui.button(i18n.t("clear_gui_only")).clicked() {
                         log_state.entries.clear();
                         log_state.copy_status.clear();
                         log_state.show_clear_popup = false;
                     }
-                    if ui.button("GUI + File").clicked() {
+                    if ui.button(i18n.t("clear_gui_and_file")).clicked() {
                         log_state.entries.clear();
                         log_state.copy_status.clear();
                         let config = state.config();

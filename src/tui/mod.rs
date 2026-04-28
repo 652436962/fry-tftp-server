@@ -51,11 +51,10 @@ pub async fn run(
 
             if event::poll(Duration::from_millis(250))? {
                 match event::read()? {
-                    Event::Key(key) => {
-                        if tui_app.handle_key(key) {
-                            break;
-                        }
+                    Event::Key(key) if tui_app.handle_key(key) => {
+                        break;
                     }
+                    Event::Key(_) => {}
                     Event::Mouse(mouse) => {
                         tui_app.handle_mouse(mouse);
                     }

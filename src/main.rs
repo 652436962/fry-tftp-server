@@ -206,24 +206,36 @@ fn init_logging(config: &Config) {
             let _ = std::fs::create_dir_all(parent);
         }
 
-        let file_appender = tracing_appender::rolling::daily(
-            log_path.parent().unwrap_or(std::path::Path::new(".")),
-            log_path
-                .file_name()
-                .unwrap_or(std::ffi::OsStr::new("fry-tftp-server.log")),
-        );
-        let (non_blocking, _guard) = tracing_appender::non_blocking(file_appender);
-        std::mem::forget(_guard);
+        match std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+            tracing_appender::rolling::daily(
+                log_path.parent().unwrap_or(std::path::Path::new(".")),
+                log_path
+                    .file_name()
+                    .unwrap_or(std::ffi::OsStr::new("fry-tftp-server.log")),
+            )
+        })) {
+            Ok(file_appender) => {
+                let (non_blocking, _guard) = tracing_appender::non_blocking(file_appender);
+                std::mem::forget(_guard);
 
-        Some(
-            fmt::layer()
-                .with_target(true)
-                .with_thread_ids(false)
-                .with_file(false)
-                .with_line_number(false)
-                .with_ansi(false)
-                .with_writer(non_blocking),
-        )
+                Some(
+                    fmt::layer()
+                        .with_target(true)
+                        .with_thread_ids(false)
+                        .with_file(false)
+                        .with_line_number(false)
+                        .with_ansi(false)
+                        .with_writer(non_blocking),
+                )
+            }
+            Err(_) => {
+                eprintln!(
+                    "[logging] failed to initialize log file {} (file logging disabled)",
+                    log_path.display()
+                );
+                None
+            }
+        }
     } else {
         None
     };
@@ -313,24 +325,36 @@ fn init_logging_with_buffer(
         if let Some(parent) = log_path.parent() {
             let _ = std::fs::create_dir_all(parent);
         }
-        let file_appender = tracing_appender::rolling::daily(
-            log_path.parent().unwrap_or(std::path::Path::new(".")),
-            log_path
-                .file_name()
-                .unwrap_or(std::ffi::OsStr::new("fry-tftp-server.log")),
-        );
-        let (non_blocking, _guard) = tracing_appender::non_blocking(file_appender);
-        std::mem::forget(_guard);
+        match std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+            tracing_appender::rolling::daily(
+                log_path.parent().unwrap_or(std::path::Path::new(".")),
+                log_path
+                    .file_name()
+                    .unwrap_or(std::ffi::OsStr::new("fry-tftp-server.log")),
+            )
+        })) {
+            Ok(file_appender) => {
+                let (non_blocking, _guard) = tracing_appender::non_blocking(file_appender);
+                std::mem::forget(_guard);
 
-        Some(
-            fmt::layer()
-                .with_target(true)
-                .with_thread_ids(false)
-                .with_file(false)
-                .with_line_number(false)
-                .with_ansi(false)
-                .with_writer(non_blocking),
-        )
+                Some(
+                    fmt::layer()
+                        .with_target(true)
+                        .with_thread_ids(false)
+                        .with_file(false)
+                        .with_line_number(false)
+                        .with_ansi(false)
+                        .with_writer(non_blocking),
+                )
+            }
+            Err(_) => {
+                eprintln!(
+                    "[logging] failed to initialize log file {} (file logging disabled)",
+                    log_path.display()
+                );
+                None
+            }
+        }
     } else {
         None
     };

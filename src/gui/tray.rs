@@ -1,5 +1,8 @@
 use tray_icon::menu::{Menu, MenuEvent, MenuItem};
-use tray_icon::{Icon, TrayIcon, TrayIconBuilder};
+use tray_icon::{Icon, TrayIconBuilder};
+use tray_icon::TrayIcon;
+
+use crate::core::i18n::I18n;
 
 pub struct TrayState {
     pub tray_icon: TrayIcon,
@@ -37,12 +40,17 @@ fn load_icon_from_png() -> Icon {
     Icon::from_rgba(rgba, info.width, info.height).expect("failed to create tray icon from PNG")
 }
 
-pub fn create_tray() -> anyhow::Result<TrayState> {
+pub fn create_tray(i18n: &I18n) -> anyhow::Result<TrayState> {
+    #[cfg(target_os = "linux")]
+    {
+        gtk::init()?;
+    }
+
     let menu = Menu::new();
 
-    let show_item = MenuItem::new("Show", true, None);
-    let stop_item = MenuItem::new("Stop Server", true, None);
-    let quit_item = MenuItem::new("Quit", true, None);
+    let show_item = MenuItem::new(i18n.t("show"), true, None);
+    let stop_item = MenuItem::new(i18n.t("stop_server"), true, None);
+    let quit_item = MenuItem::new(i18n.t("quit"), true, None);
 
     let show_id = show_item.id().clone();
     let stop_id = stop_item.id().clone();
@@ -56,7 +64,7 @@ pub fn create_tray() -> anyhow::Result<TrayState> {
 
     let tray_icon = TrayIconBuilder::new()
         .with_menu(Box::new(menu))
-        .with_tooltip("Fry TFTP Server - Running")
+        .with_tooltip(i18n.t("tray_running"))
         .with_icon(icon)
         .build()?;
 
@@ -68,6 +76,16 @@ pub fn create_tray() -> anyhow::Result<TrayState> {
     })
 }
 
+#[cfg(target_os = "linux")]
+pub fn pump_event_loop() {
+    while gtk::events_pending() {
+        gtk::main_iteration_do(false);
+    }
+}
+
+#[cfg(not(target_os = "linux"))]
+pub fn pump_event_loop() {}
+
 /// Tray visual state: Running (green), Stopped (grey), Error (red)
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub enum TrayVisualState {
@@ -76,11 +94,11 @@ pub enum TrayVisualState {
     Error,
 }
 
-pub fn update_tray_icon(tray: &TrayState, visual: TrayVisualState) {
+pub fn update_tray_icon(tray: &TrayState, visual: TrayVisualState, i18n: &I18n) {
     let tooltip = match visual {
-        TrayVisualState::Running => "Fry TFTP Server - Running",
-        TrayVisualState::Stopped => "Fry TFTP Server - Stopped",
-        TrayVisualState::Error => "Fry TFTP Server - Error",
+        TrayVisualState::Running => i18n.t("tray_running"),
+        TrayVisualState::Stopped => i18n.t("tray_stopped"),
+        TrayVisualState::Error => i18n.t("tray_error"),
     };
     // Always use the same icon (custom PNG), just update tooltip
     let _ = tray.tray_icon.set_tooltip(Some(tooltip));

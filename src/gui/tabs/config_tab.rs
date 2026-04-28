@@ -82,8 +82,11 @@ impl ConfigState {
         }
     }
 
-    fn apply_to_config(&self, config: &mut Config) -> Result<(), String> {
-        config.server.port = self.port.parse().map_err(|_| "Invalid port")?;
+    fn apply_to_config(&self, config: &mut Config, i18n: &I18n) -> Result<(), String> {
+        config.server.port = self
+            .port
+            .parse()
+            .map_err(|_| i18n.t("invalid_port").to_string())?;
         config.server.bind_address = self.bind_address.clone();
         config.server.root = self.root.clone().into();
         config.network.ip_version = self.ip_version.clone();
@@ -91,7 +94,7 @@ impl ConfigState {
         config.server.max_log_lines = self
             .max_log_lines
             .parse()
-            .map_err(|_| "Invalid max log lines")?;
+            .map_err(|_| i18n.t("invalid_max_log_lines").to_string())?;
 
         config.server.transfer_log = self.transfer_log.clone();
 
@@ -99,50 +102,50 @@ impl ConfigState {
         config.protocol.default_blksize = self
             .default_blksize
             .parse()
-            .map_err(|_| "Invalid blksize")?;
+            .map_err(|_| i18n.t("invalid_blksize").to_string())?;
         config.protocol.max_blksize = self
             .max_blksize
             .parse()
-            .map_err(|_| "Invalid max blksize")?;
+            .map_err(|_| i18n.t("invalid_max_blksize").to_string())?;
         config.protocol.default_windowsize = self
             .default_windowsize
             .parse()
-            .map_err(|_| "Invalid windowsize")?;
+            .map_err(|_| i18n.t("invalid_windowsize").to_string())?;
         config.protocol.max_windowsize = self
             .max_windowsize
             .parse()
-            .map_err(|_| "Invalid max windowsize")?;
+            .map_err(|_| i18n.t("invalid_max_windowsize").to_string())?;
         config.protocol.default_timeout = self
             .default_timeout
             .parse()
-            .map_err(|_| "Invalid timeout")?;
+            .map_err(|_| i18n.t("invalid_timeout").to_string())?;
 
         config.session.max_sessions = self
             .max_sessions
             .parse()
-            .map_err(|_| "Invalid max sessions")?;
+            .map_err(|_| i18n.t("invalid_max_sessions").to_string())?;
         config.session.max_retries = self
             .max_retries
             .parse()
-            .map_err(|_| "Invalid max retries")?;
+            .map_err(|_| i18n.t("invalid_max_retries").to_string())?;
         config.session.exponential_backoff = self.exponential_backoff;
         config.session.session_timeout = self
             .session_timeout
             .parse()
-            .map_err(|_| "Invalid session timeout")?;
+            .map_err(|_| i18n.t("invalid_session_timeout").to_string())?;
 
         config.security.per_ip_max_sessions = self
             .per_ip_max_sessions
             .parse()
-            .map_err(|_| "Invalid per-IP max sessions")?;
+            .map_err(|_| i18n.t("invalid_per_ip_max_sessions").to_string())?;
         config.security.per_ip_rate_limit = self
             .per_ip_rate_limit
             .parse()
-            .map_err(|_| "Invalid rate limit")?;
+            .map_err(|_| i18n.t("invalid_rate_limit").to_string())?;
         config.security.rate_limit_window_seconds = self
             .rate_limit_window
             .parse()
-            .map_err(|_| "Invalid rate limit window")?;
+            .map_err(|_| i18n.t("invalid_rate_limit_window").to_string())?;
 
         config.filesystem.max_file_size = self.max_file_size.clone();
         config.filesystem.allow_overwrite = self.allow_overwrite;
@@ -395,7 +398,7 @@ pub fn draw(ui: &mut Ui, state: &Arc<AppState>, cs: &mut ConfigState, i18n: &I18
         if apply_btn.clicked() {
             let old_config = state.config();
             let mut new_config = (*old_config).clone();
-            match cs.apply_to_config(&mut new_config) {
+            match cs.apply_to_config(&mut new_config, i18n) {
                 Ok(()) => {
                     // Detect if restart-requiring settings changed
                     let needs_restart = new_config.server.port != old_config.server.port
@@ -415,32 +418,37 @@ pub fn draw(ui: &mut Ui, state: &Arc<AppState>, cs: &mut ConfigState, i18n: &I18
                     match save_result {
                         Ok(path) => {
                             cs.status_message = format!(
-                                "Config applied & saved to {}{}",
+                                "{} {}{}",
+                                i18n.t("config_applied_saved_to"),
                                 path.display(),
                                 restart_note
                             );
                         }
                         Err(e) => {
-                            cs.status_message =
-                                format!("Config applied (save failed: {}){}", e, restart_note);
+                            cs.status_message = format!(
+                                "{} {}){}",
+                                i18n.t("config_applied_save_failed"),
+                                e,
+                                restart_note
+                            );
                         }
                     }
                 }
                 Err(e) => {
-                    cs.status_message = format!("Error: {}", e);
+                    cs.status_message = format!("{} {}", i18n.t("error_prefix"), e);
                 }
             }
         }
 
         if ui.button(i18n.t("reset_current")).clicked() {
             *cs = ConfigState::from_config(&state.config());
-            cs.status_message = "Reset to current running config".to_string();
+            cs.status_message = i18n.t("reset_current_status").to_string();
         }
 
         if ui.button(i18n.t("reset_defaults")).clicked() {
             *cs = ConfigState::from_config(&Config::default());
             cs.dirty = true;
-            cs.status_message = "Reset to defaults (click Apply to activate)".to_string();
+            cs.status_message = i18n.t("reset_defaults_status").to_string();
         }
 
         if ui.button(i18n.t("import_toml")).clicked() {
@@ -454,16 +462,18 @@ pub fn draw(ui: &mut Ui, state: &Arc<AppState>, cs: &mut ConfigState, i18n: &I18
                             *cs = ConfigState::from_config(&imported);
                             cs.dirty = true;
                             cs.status_message = format!(
-                                "Imported from {} (click Apply to activate)",
-                                path.display()
+                                "{} {} ({})",
+                                i18n.t("imported_from"),
+                                path.display(),
+                                i18n.t("apply")
                             );
                         }
                         Err(e) => {
-                            cs.status_message = format!("Parse error: {}", e);
+                            cs.status_message = format!("{} {}", i18n.t("parse_error"), e);
                         }
                     },
                     Err(e) => {
-                        cs.status_message = format!("Read error: {}", e);
+                        cs.status_message = format!("{} {}", i18n.t("read_error"), e);
                     }
                 }
             }
@@ -478,13 +488,13 @@ pub fn draw(ui: &mut Ui, state: &Arc<AppState>, cs: &mut ConfigState, i18n: &I18
                 match toml::to_string_pretty(&*config) {
                     Ok(content) => {
                         if let Err(e) = std::fs::write(&path, &content) {
-                            cs.status_message = format!("Write error: {}", e);
+                            cs.status_message = format!("{} {}", i18n.t("write_error"), e);
                         } else {
-                            cs.status_message = "Config exported".to_string();
+                            cs.status_message = i18n.t("config_exported").to_string();
                         }
                     }
                     Err(e) => {
-                        cs.status_message = format!("Serialize error: {}", e);
+                        cs.status_message = format!("{} {}", i18n.t("serialize_error"), e);
                     }
                 }
             }
